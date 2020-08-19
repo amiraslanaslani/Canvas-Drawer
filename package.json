@@ -2,9 +2,9 @@
   "name": "canvas-drawer",
   "version": "1.0.0",
   "description": "Minimal WebGL-based 2D visualization library ",
-  "main": "dist/index.js",
+  "main": "dist/CanvasDrawer.min.js",
   "scripts": {
-    "compile": "scripts/compile.js"
+    "compile": "node scripts/compile.js"
   },
   "repository": {
     "type": "git",
@@ -12,15 +12,21 @@
   },
   "keywords": [
     "webgl",
-    "2d"
+    "2d",
+    "library",
+    "canvas"
   ],
-  "author": "Amir Aslan Aslani",
+  "author": {
+    "name": "Amir Aslan Aslani"
+  },
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/amiraslanaslani/Canvas-Drawer/issues"
   },
   "homepage": "https://github.com/amiraslanaslani/Canvas-Drawer#readme",
   "dependencies": {
-    "jquery": "^3.5.1"
+    "earcut": "^2.2.2",
+    "jquery": "^3.5.1",
+    "terser": "^5.2.0"
   }
 }

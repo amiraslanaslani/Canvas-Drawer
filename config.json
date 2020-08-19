@@ -1,0 +1,18 @@
+{
+    "compile":[
+        {
+            "files": [
+                "src/1_Historian.js",
+                "src/2_Cartographer.js",
+                "src/3_Drawer.js",
+                "src/4_PositionMaker.js",
+                "src/5_CanvasDrawer.js"
+            ],
+            "dist": {
+                "main": "CanvasDrawer.js",
+                "minified": "CanvasDrawer.min.js"
+            }
+        }
+    ],
+    "dist_path": "./dist/"
+}
