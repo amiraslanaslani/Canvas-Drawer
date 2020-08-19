@@ -192,21 +192,34 @@ function Drawer(id, webglErrorFunction){
 
     this.setTextureScale = function(scale){
         this.texScale = [scale, scale];
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
         this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
     }
 
     this.setTextureResolution = function(w, h){
         this.texResolution = [w, h];
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
         this.setShaderTextureResolution(this.texScale[0] * w, this.texScale[1] * h);
     }
 
     this.setShaderTextureResolution = function(w, h){
         this.gl.uniform2f(this.textureResolutionUniformLocation, w, h);
     }
-    
+
+    this.setBaseTextureTranslation = function(x, y){
+        this.baseTextureTranslation = [x, y];
+        this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
+    }
+
     this.setTextureTranslation = function(tx, ty){
         this.texTranslation = [tx, ty];
-        this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
+        this.gl.uniform2fv(
+            this.textureTranslationLocation, 
+            [
+                this.texTranslation[0] + this.baseTextureTranslation[0],
+                this.texTranslation[1] + this.baseTextureTranslation[1]
+            ]
+        );
     };
 
     this.updateTranslation = function(tx, ty){
@@ -242,13 +255,17 @@ function Drawer(id, webglErrorFunction){
     this.updateScaleIntoPoint = function(newScale, x, y){
         let scaleRatio = newScale / this.scale[0];
         this.setScale(newScale);
+        this.setTextureScale(newScale);
+        this.setTextureTranslation(
+            scaleRatio * this.texTranslation[0] + x - scaleRatio * x,
+            scaleRatio * this.texTranslation[1] + y - scaleRatio * y
+        );
         this.setTranslation(
             scaleRatio * this.translation[0] + x - scaleRatio * x, 
-            scaleRatio * this.translation[1] + y - scaleRatio * y
+            scaleRatio * this.translation[1] + y - scaleRatio * y, 
         );
         this.redraw();
     }
-    
 
     this.setup = function(){
         var vertexShaderSource = this.vertexShaderSource;
@@ -296,6 +313,8 @@ function Drawer(id, webglErrorFunction){
         this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.uniform2f(this.textureResolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.texResolution = [this.gl.canvas.width, this.gl.canvas.height];
+        this.baseTextureTranslation = [0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1]))];
+        
     };
 
 
@@ -303,6 +322,7 @@ function Drawer(id, webglErrorFunction){
     this.scale = [1, 1];
     this.texScale = [1, 1];
     this.texResolution = [0, 0];
+    this.baseTextureTranslation = [0, 0];
 
     this.translation = [0, 0];
     this.texTranslation = [0, 0];
