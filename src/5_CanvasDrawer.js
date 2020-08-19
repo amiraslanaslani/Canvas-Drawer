@@ -24,12 +24,17 @@ function CanvasDrawer(info){
     if(isCartographerEnable){
         let drawer = this.drawer;
 
-        var setReativeTranslation = function(rx, ry, px, py){
+        var setReativeTranslation = function(rx, ry, px, py, tpx, tpy){
+            drawer.setTextureTranslation(tpx + rx, tpy + ry);
             drawer.updateTranslation(px + rx, py + ry);
         }
 
         var getPinPoint = function(){
             return drawer.translation;
+        }
+
+        var getTexturePinPoint = function(){
+            return drawer.texTranslation;
         }
 
         var zoominAction = function (x,y) {
@@ -42,7 +47,7 @@ function CanvasDrawer(info){
             drawer.updateScaleIntoPoint(scale * zoomOutRate,x,y);
         }
 
-        this.cartographer = new Cartographer("c", setReativeTranslation, getPinPoint, zoominAction, zoomoutAction);
+        this.cartographer = new Cartographer("c", setReativeTranslation, getPinPoint, getTexturePinPoint, zoominAction, zoomoutAction);
     }
 
     // Set Position Maker
@@ -51,6 +56,16 @@ function CanvasDrawer(info){
     this.draw = function(r, g, b, a){
         drawer.draw(this.positionMaker.positions, r, g, b, a);
         this.positionMaker.reset();
+    }
+
+    this.loadTexture = function(image){
+        // this.drawer.setTexture(image, slut);
+        
+        this.drawer.setTexture(image, 0);
+        this.drawer.setUseTexture(0);
+        this.drawer.setTextureEnable();
+        this.positionMaker.addCircle(200,200,100,15);
+        this.draw(1,0,0,1);
     }
 
 }

@@ -1,15 +1,16 @@
 "use strict";
 
-function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0,0]}, zoominCallback=function(e){}, zoomoutCallback=function(e){}){
+function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(e){}, zoomoutCallback=function(e){}){
     var selector = $('#' + id);
     var clicked = false, clickY, clickX, scrollTopTmp, scrollLeftTmp;
     selector.css('cursor', 'grab');
     var pinPoint = [0,0];
+    var texPinPoint = [0,0];
 
     var updateScrollPos = function(e) {
         let changeY = e.pageY - clickY;
         let changeX = e.pageX - clickX;
-        setReativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1]);
+        setReativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1], texPinPoint[0], texPinPoint[1]);
     }
 
     selector.on({
@@ -19,6 +20,7 @@ function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0
         'mousedown': function(e) {
             selector.css('cursor', 'grabbing');
             pinPoint = getPinPoint();
+            texPinPoint = getTexturePinPoint();
             clicked = true;
             clickY = e.pageY;
             clickX = e.pageX;
