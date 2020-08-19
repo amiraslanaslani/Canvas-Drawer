@@ -64,7 +64,8 @@ function CanvasDrawer(info){
         this.drawer.setTexture(image, 0);
         this.drawer.setUseTexture(0);
         this.drawer.setTextureEnable();
-        this.positionMaker.addCircle(200,200,100,15);
+        this.drawer.setTextureResolution(512, 512);
+        this.positionMaker.addPolygon([0,0, 256,0, 256,256, 0,256]);
         this.draw(1,0,0,1);
     }
 
