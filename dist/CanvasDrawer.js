@@ -579,13 +579,13 @@ function PositionMaker(){
 
     // Drawer's APIs
     this.draw = function(r, g, b, a){
-        drawer.draw(this.positionMaker.positions, r, g, b, a);
+        this.drawer.draw(this.positionMaker.positions, r, g, b, a);
         this.positionMaker.reset();
     }
 
 
     this.justDraw = function(){
-        drawer.justDraw(this.positionMaker.positions);
+        this.drawer.justDraw(this.positionMaker.positions);
         this.positionMaker.reset();
     }
 
