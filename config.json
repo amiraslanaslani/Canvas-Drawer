@@ -15,5 +15,14 @@
             }
         }
     ],
-    "dist_path": "./dist/"
+    "preview":{
+        "template": "scripts/compile/preview.mustache",
+        "title": "Canvas Drawer",
+        "modules": [
+            "jquery/dist/jquery.min.js",
+            "earcut/src/earcut.js"
+        ],
+        "path": "preview/"
+    },
+    "dist_path": "dist/"
 }
