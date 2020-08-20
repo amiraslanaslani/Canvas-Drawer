@@ -2,11 +2,12 @@
     "compile":[
         {
             "files": [
-                "src/1_Historian.js",
-                "src/2_Cartographer.js",
-                "src/3_Drawer.js",
-                "src/4_PositionMaker.js",
-                "src/5_CanvasDrawer.js"
+                "src/HistoryManager.js",
+                "src/Historian.js",
+                "src/Cartographer.js",
+                "src/Drawer.js",
+                "src/PositionMaker.js",
+                "src/CanvasDrawer.js"
             ],
             "dist": {
                 "main": "CanvasDrawer.js",
@@ -14,5 +15,14 @@
             }
         }
     ],
-    "dist_path": "./dist/"
+    "preview":{
+        "template": "scripts/compile/preview.mustache",
+        "title": "Canvas Drawer",
+        "modules": [
+            "jquery/dist/jquery.min.js",
+            "earcut/src/earcut.js"
+        ],
+        "path": "preview/"
+    },
+    "dist_path": "dist/"
 }

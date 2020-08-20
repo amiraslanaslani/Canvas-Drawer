@@ -2,13 +2,75 @@
 
 "use strict";
 
+function HistoryManager(historian){
+
+    this.historian = historian;
+
+    // Color Attr.
+    this.r = this.g = this.b = this.a = 1;
+    
+    //Texture Attr.
+    this.t_slut = 0;
+    this.t_resolution = [1, 1];
+    this.t_translation = [0, 0];
+
+    this.setColor = function(r, g, b, a){
+        let key = "" + r + " " + g + " " + b + " " + a;
+        this.historian.setKey(key);
+    }
+
+    this.updateTextureKey = function(){
+        let key =   "#" + this.t_slut + 
+                    ":" + this.t_resolution[0] + // Resolution W
+                    ":" + this.t_resolution[1] + // Resolution H
+                    ":" + this.t_translation[0] + // Translation X
+                    ":" + this.t_translation[1]; // Translation Y
+
+        this.historian.setKey(key);
+    }
+
+    this.setTextureSlut = function(slut){
+        this.t_slut = slut;
+        this.updateTextureKey();
+    }
+
+    this.setTextureResolution = function(w, h){
+        this.t_resolution = [w, h];
+        this.updateTextureKey();
+    }
+
+    this.setTextureTranslation = function(x, y){
+        this.t_translation = [x, y];
+        this.updateTextureKey();
+    }
+
+    this.submitVanilla = function(positions){
+        this.historian.submitVanilla(positions);
+    }
+
+    this.forget = function(){
+        return this.historian.forget();
+    }
+
+    this.getKeys = function(){
+        return this.historian.getKeys();
+    }
+
+    this.getMemo = function(){
+        return this.historian.getMemo();
+    }
+
+    // Constructor
+    this.historian = historian;
+}
+"use strict";
+
 function Historian(){
     this.memo = {};
     this.keys = [];
-    this.r = this.g = this.b = this.a = 0;
+    this.key = "-1";
 
-    this.submit = function(positions, r, g, b, a){
-        let key = "" + r + " " + g + " " + b + " " + a;
+    this.submit = function(positions, key){
         if(! (key in this.memo)){
             this.keys.push(key);
             this.memo[key] = [];
@@ -18,14 +80,11 @@ function Historian(){
     }
 
     this.submitVanilla = function(positions){
-        this.submit(positions, this.r, this.g, this.b, this.a);
+        this.submit(positions, this.key);
     }
 
-    this.setColor = function(r,g,b,a){
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+    this.setKey = function(key){
+        this.key = key;
     }
 
     this.forget = function(){
@@ -43,16 +102,17 @@ function Historian(){
 }
 "use strict";
 
-function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0,0]}, zoominCallback=function(e){}, zoomoutCallback=function(e){}){
+function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(e){}, zoomoutCallback=function(e){}){
     var selector = $('#' + id);
     var clicked = false, clickY, clickX, scrollTopTmp, scrollLeftTmp;
     selector.css('cursor', 'grab');
     var pinPoint = [0,0];
+    var texPinPoint = [0,0];
 
     var updateScrollPos = function(e) {
         let changeY = e.pageY - clickY;
         let changeX = e.pageX - clickX;
-        setReativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1]);
+        setReativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1], texPinPoint[0], texPinPoint[1]);
     }
 
     selector.on({
@@ -62,6 +122,7 @@ function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0
         'mousedown': function(e) {
             selector.css('cursor', 'grabbing');
             pinPoint = getPinPoint();
+            texPinPoint = getTexturePinPoint();
             clicked = true;
             clickY = e.pageY;
             clickX = e.pageX;
@@ -124,11 +185,80 @@ function Drawer(id, webglErrorFunction){
     this.fragmentShaderSource = `
         precision mediump float;
         uniform vec4 u_color;
+        uniform sampler2D tex;
+        
+        uniform vec2 u_tex_resolution;
+        uniform vec2 u_tex_translation;
+
+        uniform vec4 u_color_mask;
+        uniform vec4 u_texture_mask;
 
         void main() {
-            gl_FragColor = u_color;
+            mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
+            vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
+            vec2 zeroToOne = position / u_tex_resolution;
+            vec2 zeroToTwo = zeroToOne * 2.0;
+            vec2 clipSpace = zeroToTwo - 1.0;
+            clipSpace = clipSpace * vec2(1, -1);
+
+            mediump vec4 sample = texture2D(tex, clipSpace);
+            gl_FragColor = (u_color_mask * u_color) + (u_texture_mask * sample);
         }
     `;
+
+    // Texure Unit
+    
+    this.activeTextureUnit = -1;
+
+
+    this.getMaximumTextureUnits = function(){
+        return this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+    }
+
+
+    this.setActiveTextureUnit = function(value){ // value is -1 for color and 0 until (gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1) for texture units
+        if(value < 0 || value >= this.getMaximumTextureUnits())
+            return false;
+
+        let textureAddress = this.gl.TEXTURE0 + value;
+        this.gl.activeTexture(textureAddress);
+        return true;
+    }
+
+
+    this.setTexture = function(image, slut){
+        this.setActiveTextureUnit(slut);
+        let tex = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.gl.RGB, this.gl.UNSIGNED_BYTE, image);
+        this.gl.generateMipmap(this.gl.TEXTURE_2D);
+        console.log("Texture is loaded to TEXTURE" + slut);
+    }
+
+
+    this.setUseTexture = function(slut){
+        this.activeTexture = slut;
+        this.historyManager.setTextureSlut(this.activeTexture);
+        this.gl.uniform1i(this.textureLocation, slut);
+        // console.log("Fragment shader texture usage setted to TEXTURE" + slut);
+    }
+
+
+    this.setColorEnable = function(){
+        this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
+        this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
+        this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
+    }
+
+
+    this.setTextureEnable = function(){
+        this.historyManager.setTextureSlut(this.activeTexture);
+        this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
+        this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
+    }
+
+
+    // Program Setups
 
     this.createShader = function(type, source) {
         var shader = this.gl.createShader(type);
@@ -160,20 +290,26 @@ function Drawer(id, webglErrorFunction){
 
     this.setColor = function(r, g, b, a){
         this.setColorVanilla(r,g,b,a);
-        this.historian.setColor(r,g,b,a);
+        this.historyManager.setColor(r,g,b,a);
     }
 
     this.setColorVanilla = function(r, g, b, a){
+        this.color = [r,g,b,a];
         this.gl.uniform4f(this.colorUniformLocation, r, g, b, a);
     }
     
     this.setPositions = function(positions){
         this.setPositionsVanilla(positions);
-        this.historian.submitVanilla(positions);
+        this.historyManager.submitVanilla(positions);
     }
 
     this.setPositionsVanilla = function(positions){
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
+    }
+
+    this.justDraw = function(positions){
+        this.setPositions(positions);
+        this.drawFromBuffer(positions.length / 2);
     }
 
     this.draw = function(positions, r, g, b, a){
@@ -191,17 +327,40 @@ function Drawer(id, webglErrorFunction){
     this.clear = function(r,g,b,a){
         this.gl.clearColor(r,g,b,a);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.historian.forget();
+        this.historyManager.forget();
     };
 
     this.repeatTheHistory = function(){
-        let keys = this.historian.getKeys();
-        let memo = this.historian.getMemo();
+        let keys = this.historyManager.getKeys();
+        let memo = this.historyManager.getMemo();
 
         for(let i = 0;i < keys.length;i ++){
             let key = keys[i];
-            let c = key.split(" ");
-            this.setColor(c[0], c[1], c[2], c[3]);
+
+            if(key.charAt(0) == "#"){ // Use Texture
+                let data = key.substring(1);
+                data = data.split(":");
+
+                this.setTextureEnable();
+                
+                for(let j = 0;j < data.length;j ++){
+                    data[j] = parseInt(data[j]);
+                }
+                
+                this.setUseTexture(data[0]);
+                this.setTextureResolutionVanilla(data[1], data[2]);
+                this.textureUserTranslation = [
+                    data[3] * this.texScale[0], 
+                    data[4] * this.texScale[1]
+                ];
+                this.setTextureTranslationFromValuesToShader();
+            }
+            else{ // Use Color
+                this.setColorEnable();
+                let c = key.split(" ");
+                this.setColor(c[0], c[1], c[2], c[3]);
+            }
+
             let keyMemo = memo[key];
             this.setPositionsVanilla(keyMemo);
             this.drawFromBuffer(keyMemo.length / 2);
@@ -223,17 +382,68 @@ function Drawer(id, webglErrorFunction){
         this.gl.uniform2fv(this.translationLocation, this.translation);
     };
 
+    this.updateTextureScale = function(scale){
+        this.setTextureScale(scale);
+        this.redraw();
+    }
+
+    this.setTextureScale = function(scale){
+        this.texScale = [scale, scale];
+        this.updateTextureValues();
+    }
+
+    this.setTextureResolutionVanilla = function(w, h){
+        this.texResolution = [w, h];
+        this.updateTextureValues();
+    }
+
+    this.setTextureResolution = function(w, h){
+        this.setTextureResolutionVanilla(w, h);
+        this.historyManager.setTextureResolution(w, h);
+    }
+
+    this.updateTextureValues = function(){
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
+        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
+    }
+
+    this.setShaderTextureResolution = function(w, h){
+        this.gl.uniform2f(this.textureResolutionUniformLocation, w, h);
+    }
+
+    this.setBaseTextureTranslation = function(x, y){
+        this.baseTextureTranslation = [x, y];
+        this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
+    }
+
+    this.setTextureTranslationVanilla = function(tx, ty){
+        this.texTranslation = [tx, ty];
+        this.setTextureTranslationFromValuesToShader();
+    }
+
+    this.setTextureTranslationFromValuesToShader = function(){
+        this.gl.uniform2fv(
+            this.textureTranslationLocation, 
+            [
+                this.texTranslation[0] + this.baseTextureTranslation[0] + this.textureUserTranslation[0],
+                this.texTranslation[1] + this.baseTextureTranslation[1] + this.textureUserTranslation[1]
+            ]
+        );
+    }
+
+    this.setTextureUserTranslation = function(tx, ty){
+        this.historyManager.setTextureTranslation(tx, ty);
+        this.textureUserTranslation = [tx, ty];
+    };
+
+    this.setTextureTranslation = function(tx, ty){
+        this.setTextureTranslationVanilla(tx, ty);
+    };
+
     this.updateTranslation = function(tx, ty){
         this.setTranslation(tx, ty);
         this.redraw();
     };
-
-    this.updateRelativeTranslaton = function(rx, ry){
-        this.updateTranslation(
-            this.translation[0] + rx, 
-            this.translation[1] + ry
-        );
-    }
 
     this.redraw = function(){
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -256,47 +466,17 @@ function Drawer(id, webglErrorFunction){
     this.updateScaleIntoPoint = function(newScale, x, y){
         let scaleRatio = newScale / this.scale[0];
         this.setScale(newScale);
+        this.setTextureScale(newScale);
+        this.setTextureTranslation(
+            scaleRatio * this.texTranslation[0] + x - scaleRatio * x,
+            scaleRatio * this.texTranslation[1] + y - scaleRatio * y
+        );
         this.setTranslation(
             scaleRatio * this.translation[0] + x - scaleRatio * x, 
-            scaleRatio * this.translation[1] + y - scaleRatio * y
+            scaleRatio * this.translation[1] + y - scaleRatio * y, 
         );
         this.redraw();
     }
-
-    // this.addTexture = function(name, url){
-    //     var tex = this.gl.createTexture();
-    //     this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
-    //     // Fill the texture with a 1x1 blue pixel.
-    //     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
-    //                     new Uint8Array([0, 0, 255, 255]));
-    
-    //     // let's assume all images are not a power of 2
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    
-    //     var textureInfo = {
-    //         width: 1,   // we don't know the size until it loads
-    //         height: 1,
-    //         texture: tex,
-    //     };
-    //     var img = new Image();
-    //     img.addEventListener('load', function() {
-    //         textureInfo.width = img.width;
-    //         textureInfo.height = img.height;
-    
-    //         drawer.gl.bindTexture(drawer.gl.TEXTURE_2D, textureInfo.texture);
-    //         drawer.gl.texImage2D(drawer.gl.TEXTURE_2D, 0, drawer.gl.RGBA, drawer.gl.RGBA, drawer.gl.UNSIGNED_BYTE, img);
-    //     });
-    //     img.src = url;
-        
-    //     if(!(name in this.textures)){
-    //         this.texturesList.push(name);
-    //     }
-    //     this.textures[name] = textureInfo;
-        
-    //     return textureInfo;
-    // }
 
     this.setup = function(){
         var vertexShaderSource = this.vertexShaderSource;
@@ -311,10 +491,21 @@ function Drawer(id, webglErrorFunction){
         this.colorUniformLocation = this.gl.getUniformLocation(this.program, "u_color");
         this.scaleLocation = this.gl.getUniformLocation(this.program, "u_scale");
         this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
+        this.textureLocation = this.gl.getUniformLocation(this.program, "tex");
+
+        this.textureResolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_tex_resolution");
+        this.textureTranslationLocation = this.gl.getUniformLocation(this.program, "u_tex_translation");
+        
+        this.colorMaskLocation = this.gl.getUniformLocation(this.program, "u_color_mask");
+        this.textureMaskLocation = this.gl.getUniformLocation(this.program, "u_texture_mask");
 
         this.clear(0,0,0,0);
         this.gl.uniform2fv(this.scaleLocation, this.scale);
         this.gl.uniform2fv(this.translationLocation, this.translation);
+        this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
+
+        this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
+        this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
 
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
@@ -331,28 +522,46 @@ function Drawer(id, webglErrorFunction){
         );
 
         this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.uniform2f(this.textureResolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+        this.texResolution = [this.gl.canvas.width, this.gl.canvas.height];
+        this.baseTextureTranslation = [0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1]))];
+        
     };
 
 
-    this.historian = new Historian();
-    this.scale = [1, 1];
+    // Constructor
+    this.constructor = function(id, webglErrorFunction){
+        this.historyManager = new HistoryManager(
+            new Historian()
+        );
 
-    this.textures = {};
-    this.texturesList = [];
+        this.color = [0,0,0,1];
+        this.activeTexture = 0;
+        this.scale = [1, 1];
+        this.texScale = [1, 1];
+        this.texResolution = [0, 0];
+        this.baseTextureTranslation = [0, 0];
+        this.textureUserTranslation = [0, 0];
 
-    this.translation = [0, 0];
-    var canvas = document.getElementById(id);
-    this.gl = canvas.getContext("webgl");
-    if (!this.gl) {
-        webglErrorFunction();
+        this.translation = [0, 0];
+        this.texTranslation = [0, 0];
+
+        var canvas = document.getElementById(id);
+        this.gl = canvas.getContext("webgl");
+        if (!this.gl) {
+            webglErrorFunction();
+        }
+        else{
+            this.setup();
+        }
+        window.addEventListener("resize", function(){
+            this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+            this.redraw();
+        });
     }
-    else{
-        this.setup();
-    }
-    window.addEventListener("resize", function(){
-        drawer.gl.uniform2f(drawer.resolutionUniformLocation, drawer.gl.canvas.width, drawer.gl.canvas.height);
-        drawer.redraw();
-    });
+
+    // Main
+    this.constructor(id, webglErrorFunction);
 }
 "use strict";
 
@@ -423,53 +632,117 @@ function PositionMaker(){
         return (name in this.info) ? this.info[name] : defaultValue;
     };
 
-    this.info = info;
 
-    var id = this.loadDataFromInfo('id', false);
-    var errorFunction = this.loadDataFromInfo('error', function(){});
-    var isCartographerEnable = this.loadDataFromInfo('cartographer', false);
-    var zoomInRate = this.loadDataFromInfo('zoominrate', 1.1);
-    var zoomOutRate = this.loadDataFromInfo('zoomoutrate', 0.9);
-
-    if(id === false){
-        console.log("CanvasDrawer can not found element with id that you pass or maybe you don't pass any id!");
-        return;
-    }
-
-    // Set Drawer
-    this.drawer = new Drawer(id, errorFunction);
-
-    // Set Cartographer
-    if(isCartographerEnable){
-        let drawer = this.drawer;
-
-        var setReativeTranslation = function(rx, ry, px, py){
-            drawer.updateTranslation(px + rx, py + ry);
-        }
-
-        var getPinPoint = function(){
-            return drawer.translation;
-        }
-
-        var zoominAction = function (x,y) {
-            let scale = drawer.scale[0];
-            drawer.updateScaleIntoPoint(scale * zoomInRate,x,y);
-        }
-
-        var zoomoutAction = function (x,y) {
-            let scale = drawer.scale[0];
-            drawer.updateScaleIntoPoint(scale * zoomOutRate,x,y);
-        }
-
-        this.cartographer = new Cartographer("c", setReativeTranslation, getPinPoint, zoominAction, zoomoutAction);
-    }
-
-    // Set Position Maker
-    this.positionMaker = new PositionMaker();
-
+    // Drawer's APIs
     this.draw = function(r, g, b, a){
-        drawer.draw(this.positionMaker.positions, r, g, b, a);
+        this.drawer.draw(this.positionMaker.positions, r, g, b, a);
         this.positionMaker.reset();
     }
 
+
+    this.justDraw = function(){
+        this.drawer.justDraw(this.positionMaker.positions);
+        this.positionMaker.reset();
+    }
+
+
+    this.loadTexture = function(image, slut){
+        this.drawer.setTexture(image, slut);
+    }
+
+
+    this.imagesLoadTexture = function(images, callback=()=>{}){
+        var imageLoadSlut = 0;
+        var imagesToTextureMap = [];
+        var maximumTextureUnits = this.drawer.getMaximumTextureUnits();
+
+        images.forEach(async (image) => {
+            let slut = imageLoadSlut;
+            imageLoadSlut ++;
+            imagesToTextureMap[image.idName] = slut >= maximumTextureUnits ? -1 : slut;
+            this.loadTexture(image, slut);
+        });
+
+        callback(imagesToTextureMap);
+    }
+
+
+    this.loadMultiImageToTextures = function(imagesList, callback=()=>{}){
+        var imagesLoaded = 0;
+        var imagesCount = imagesList.length;
+        var imagesObjects = [];
+
+        var imagesLoadTexture = (images) => {
+            this.imagesLoadTexture(images, callback);
+        }
+
+        imagesList.forEach((imageUrl) => {
+            let image = new Image();
+            image.idName = imageUrl;
+            imagesObjects.push(image);
+            image.onload = () => {
+                imagesLoaded ++;
+                if(imagesLoaded == imagesCount){
+                    imagesLoadTexture(imagesObjects);
+                }
+            };
+            image.src = imageUrl;
+        });
+    }
+
+
+    // Constructor
+    this.constructor = function(info){
+        this.info = info;
+
+        var id = this.loadDataFromInfo('id', false);
+        var errorFunction = this.loadDataFromInfo('error', function(){});
+        var isCartographerEnable = this.loadDataFromInfo('cartographer', false);
+        var zoomInRate = this.loadDataFromInfo('zoominrate', 1.1);
+        var zoomOutRate = this.loadDataFromInfo('zoomoutrate', 0.9);
+
+        if(id === false){
+            console.log("CanvasDrawer can not found element with id that you pass or maybe you don't pass any id!");
+            return;
+        }
+
+        // Set Drawer
+        this.drawer = new Drawer(id, errorFunction);
+
+        // Set Cartographer
+        if(isCartographerEnable){
+            let drawer = this.drawer;
+
+            var setReativeTranslation = function(rx, ry, px, py, tpx, tpy){
+                drawer.setTextureTranslation(tpx + rx, tpy + ry);
+                drawer.updateTranslation(px + rx, py + ry);
+            }
+
+            var getPinPoint = function(){
+                return drawer.translation;
+            }
+
+            var getTexturePinPoint = function(){
+                return drawer.texTranslation;
+            }
+
+            var zoominAction = function (x,y) {
+                let scale = drawer.scale[0];
+                drawer.updateScaleIntoPoint(scale * zoomInRate,x,y);
+            }
+
+            var zoomoutAction = function (x,y) {
+                let scale = drawer.scale[0];
+                drawer.updateScaleIntoPoint(scale * zoomOutRate,x,y);
+            }
+
+            this.cartographer = new Cartographer("c", setReativeTranslation, getPinPoint, getTexturePinPoint, zoominAction, zoomoutAction);
+        }
+
+        // Set Position Maker
+        this.positionMaker = new PositionMaker();
+    }
+
+    // Main
+    this.constructor(info);
 }
