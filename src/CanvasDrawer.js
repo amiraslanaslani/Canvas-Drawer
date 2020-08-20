@@ -58,15 +58,21 @@ function CanvasDrawer(info){
         this.positionMaker.reset();
     }
 
+    this.justDraw = function(){
+        drawer.justDraw(this.positionMaker.positions);
+        this.positionMaker.reset();
+    }
+
     this.loadTexture = function(image){
         // this.drawer.setTexture(image, slut);
-        
+
         this.drawer.setTexture(image, 0);
         this.drawer.setUseTexture(0);
         this.drawer.setTextureEnable();
         this.drawer.setTextureResolution(512, 512);
         this.positionMaker.addPolygon([0,0, 256,0, 256,256, 0,256]);
-        this.draw(1,0,0,1);
+        
+        this.justDraw(1,0,0,1);
     }
 
 }

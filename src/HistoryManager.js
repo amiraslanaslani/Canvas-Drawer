@@ -9,8 +9,9 @@ function HistoryManager(historian){
         this.historian.setKey(key);
     }
 
-    this.setTexture = function(){
-        // TODO
+    this.setTexture = function(slut){
+        let key = "#" + slut;
+        this.historian.setKey(key);
     }
 
     this.submitVanilla = function(positions){

@@ -70,21 +70,26 @@ function Drawer(id, webglErrorFunction){
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.gl.RGB, this.gl.UNSIGNED_BYTE, image);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-        console.log("Texture is loaded to TEXTURE" + slut);
+        // console.log("Texture is loaded to TEXTURE" + slut);
     }
 
 
     this.setUseTexture = function(slut){
+        this.activeTexture = slut;
         this.gl.uniform1i(this.textureLocation, slut);
-        console.log("Fragment shader texture usage setted to TEXTURE" + slut);
+        // console.log("Fragment shader texture usage setted to TEXTURE" + slut);
     }
 
+
     this.setColorEnable = function(){
+        this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
         this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
         this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
     }
 
+
     this.setTextureEnable = function(){
+        this.historyManager.setTexture(this.activeTexture);
         this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
         this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
     }
@@ -126,6 +131,7 @@ function Drawer(id, webglErrorFunction){
     }
 
     this.setColorVanilla = function(r, g, b, a){
+        this.color = [r,g,b,a];
         this.gl.uniform4f(this.colorUniformLocation, r, g, b, a);
     }
     
@@ -136,6 +142,11 @@ function Drawer(id, webglErrorFunction){
 
     this.setPositionsVanilla = function(positions){
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
+    }
+
+    this.justDraw = function(positions){
+        this.setPositions(positions);
+        this.drawFromBuffer(positions.length / 2);
     }
 
     this.draw = function(positions, r, g, b, a){
@@ -162,8 +173,17 @@ function Drawer(id, webglErrorFunction){
 
         for(let i = 0;i < keys.length;i ++){
             let key = keys[i];
-            let c = key.split(" ");
-            this.setColor(c[0], c[1], c[2], c[3]);
+
+            if(key.charAt(0) == "#"){ // Use Texture
+                let slut = parseInt(key.substring(1));
+                this.setTextureEnable();
+            }
+            else{ // Use Color
+                this.setColorEnable();
+                let c = key.split(" ");
+                this.setColor(c[0], c[1], c[2], c[3]);
+            }
+
             let keyMemo = memo[key];
             this.setPositionsVanilla(keyMemo);
             this.drawFromBuffer(keyMemo.length / 2);
@@ -322,6 +342,8 @@ function Drawer(id, webglErrorFunction){
         new Historian()
     );
 
+    this.color = [0,0,0,1];
+    this.activeTexture = 0;
     this.scale = [1, 1];
     this.texScale = [1, 1];
     this.texResolution = [0, 0];
