@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-20T17:40:16.629Z (Thu, 20 Aug 2020 17:40:16 GMT)
+ * Date: 2020-08-20T19:40:13.634Z (Thu, 20 Aug 2020 19:40:13 GMT)
  */
 
 "use strict";
@@ -203,15 +203,20 @@ function Drawer(id, webglErrorFunction){
         uniform vec4 u_texture_mask;
 
         void main() {
-            mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
-            vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
-            vec2 zeroToOne = position / u_tex_resolution;
-            vec2 zeroToTwo = zeroToOne * 2.0;
-            vec2 clipSpace = zeroToTwo - 1.0;
-            clipSpace = clipSpace * vec2(1, -1);
+            if(u_color_mask == vec4(0, 0, 0, 0)){
+                mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
+                vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
+                vec2 zeroToOne = position / u_tex_resolution;
+                vec2 zeroToTwo = zeroToOne * 2.0;
+                vec2 clipSpace = zeroToTwo - 1.0;
+                clipSpace = clipSpace * vec2(1, -1);
 
-            mediump vec4 sample = texture2D(tex, clipSpace);
-            gl_FragColor = (u_color_mask * u_color) + (u_texture_mask * sample);
+                mediump vec4 sample = texture2D(tex, clipSpace);
+                gl_FragColor = sample;
+            }
+            else{
+                gl_FragColor = u_color;
+            }
         }
     `;
 
