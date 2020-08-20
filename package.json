@@ -1,6 +1,6 @@
 {
   "name": "canvas-drawer",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Minimal WebGL-based 2D visualization library ",
   "main": "dist/CanvasDrawer.min.js",
   "scripts": {

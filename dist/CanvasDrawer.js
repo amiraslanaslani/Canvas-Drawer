@@ -1,4 +1,13 @@
-
+/*!
+ * Canvas Drawer v0.1.0
+ * Minimal WebGL-based 2D visualization library
+ * https://github.com/amiraslanaslani/Canvas-Drawer
+ * 
+ * Released under the Apache license 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Date: 2020-08-20T17:40:16.629Z (Thu, 20 Aug 2020 17:40:16 GMT)
+ */
 
 "use strict";
 

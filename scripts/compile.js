@@ -23,6 +23,21 @@ function createTemplateFile(previewFile, filesToLoad, template) {
     fileLog(filePath, "File updated");
 }
 
+function getHeadComment(){
+    let template = fs.readFileSync(CONFIG.preview.comment, 'utf8');
+    let now = new Date();
+
+    var view = {
+        title: CONFIG.preview.title,
+        version: CONFIG.version,
+        homepage: CONFIG.homepage,
+        date: now.toISOString() + " (" + now.toUTCString() + ")"
+    };
+
+    var output = mustache.render(template, view);
+    return output;
+}
+
 function fileLog(file, log){
     console.log(chalk.cyan(
         chalk.italic.underline(file) +
@@ -31,14 +46,14 @@ function fileLog(file, log){
     ));
 }
 
-
 let totalLines = 0;
 let allFilesList = [];
 let singleFiles = [];
 let minifiedSingleFiles = [];
-    
+let headComment = getHeadComment();
+
 CONFIG.compile.forEach(compile => {
-    let finalCode = LINE_BREAK;
+    let finalCode = headComment;
     let lines = 0;
 
     compile.files.forEach(async (file) => {

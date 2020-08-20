@@ -17,6 +17,7 @@
     ],
     "preview":{
         "template": "scripts/compile/preview.mustache",
+        "comment": "scripts/compile/comment.mustache",
         "title": "Canvas Drawer",
         "modules": [
             "jquery/dist/jquery.min.js",
@@ -24,5 +25,7 @@
         ],
         "path": "preview/"
     },
-    "dist_path": "dist/"
+    "dist_path": "dist/",
+    "version": "0.1.0",
+    "homepage": "https://github.com/amiraslanaslani/Canvas-Drawer"
 }
