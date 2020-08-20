@@ -129,7 +129,6 @@ function Drawer(id, webglErrorFunction){
         uniform sampler2D tex;
         
         uniform vec2 u_tex_resolution;
-        uniform vec2 u_tex_scale;
         uniform vec2 u_tex_translation;
 
         uniform vec4 u_color_mask;
@@ -137,8 +136,7 @@ function Drawer(id, webglErrorFunction){
 
         void main() {
             mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
-            vec2 scaledPosition = coord / u_tex_scale;
-            vec2 position = vec2(scaledPosition.x - u_tex_translation.x, scaledPosition.y + u_tex_translation.y);
+            vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
             vec2 zeroToOne = position / u_tex_resolution;
             vec2 zeroToTwo = zeroToOne * 2.0;
             vec2 clipSpace = zeroToTwo - 1.0;
@@ -290,9 +288,41 @@ function Drawer(id, webglErrorFunction){
         this.gl.uniform2fv(this.translationLocation, this.translation);
     };
 
+    this.updateTextureScale = function(scale){
+        this.setTextureScale(scale);
+        this.redraw();
+    }
+
+    this.setTextureScale = function(scale){
+        this.texScale = [scale, scale];
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
+        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
+    }
+
+    this.setTextureResolution = function(w, h){
+        this.texResolution = [w, h];
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
+        this.setShaderTextureResolution(this.texScale[0] * w, this.texScale[1] * h);
+    }
+
+    this.setShaderTextureResolution = function(w, h){
+        this.gl.uniform2f(this.textureResolutionUniformLocation, w, h);
+    }
+
+    this.setBaseTextureTranslation = function(x, y){
+        this.baseTextureTranslation = [x, y];
+        this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
+    }
+
     this.setTextureTranslation = function(tx, ty){
         this.texTranslation = [tx, ty];
-        this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
+        this.gl.uniform2fv(
+            this.textureTranslationLocation, 
+            [
+                this.texTranslation[0] + this.baseTextureTranslation[0],
+                this.texTranslation[1] + this.baseTextureTranslation[1]
+            ]
+        );
     };
 
     this.updateTranslation = function(tx, ty){
@@ -328,13 +358,17 @@ function Drawer(id, webglErrorFunction){
     this.updateScaleIntoPoint = function(newScale, x, y){
         let scaleRatio = newScale / this.scale[0];
         this.setScale(newScale);
+        this.setTextureScale(newScale);
+        this.setTextureTranslation(
+            scaleRatio * this.texTranslation[0] + x - scaleRatio * x,
+            scaleRatio * this.texTranslation[1] + y - scaleRatio * y
+        );
         this.setTranslation(
             scaleRatio * this.translation[0] + x - scaleRatio * x, 
-            scaleRatio * this.translation[1] + y - scaleRatio * y
+            scaleRatio * this.translation[1] + y - scaleRatio * y, 
         );
         this.redraw();
     }
-    
 
     this.setup = function(){
         var vertexShaderSource = this.vertexShaderSource;
@@ -352,7 +386,6 @@ function Drawer(id, webglErrorFunction){
         this.textureLocation = this.gl.getUniformLocation(this.program, "tex");
 
         this.textureResolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_tex_resolution");
-        this.textureScaleLocation = this.gl.getUniformLocation(this.program, "u_tex_scale");
         this.textureTranslationLocation = this.gl.getUniformLocation(this.program, "u_tex_translation");
         
         this.colorMaskLocation = this.gl.getUniformLocation(this.program, "u_color_mask");
@@ -361,7 +394,6 @@ function Drawer(id, webglErrorFunction){
         this.clear(0,0,0,0);
         this.gl.uniform2fv(this.scaleLocation, this.scale);
         this.gl.uniform2fv(this.translationLocation, this.translation);
-        this.gl.uniform2fv(this.textureScaleLocation, this.texScale);
         this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
 
         this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
@@ -383,12 +415,17 @@ function Drawer(id, webglErrorFunction){
 
         this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.uniform2f(this.textureResolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+        this.texResolution = [this.gl.canvas.width, this.gl.canvas.height];
+        this.baseTextureTranslation = [0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1]))];
+        
     };
 
 
     this.historian = new Historian();
     this.scale = [1, 1];
     this.texScale = [1, 1];
+    this.texResolution = [0, 0];
+    this.baseTextureTranslation = [0, 0];
 
     this.translation = [0, 0];
     this.texTranslation = [0, 0];
@@ -535,7 +572,8 @@ function PositionMaker(){
         this.drawer.setTexture(image, 0);
         this.drawer.setUseTexture(0);
         this.drawer.setTextureEnable();
-        this.positionMaker.addCircle(200,200,100,15);
+        this.drawer.setTextureResolution(512, 512);
+        this.positionMaker.addPolygon([0,0, 256,0, 256,256, 0,256]);
         this.draw(1,0,0,1);
     }
 
