@@ -70,7 +70,7 @@ function Drawer(id, webglErrorFunction){
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.gl.RGB, this.gl.UNSIGNED_BYTE, image);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-        // console.log("Texture is loaded to TEXTURE" + slut);
+        console.log("Texture is loaded to TEXTURE" + slut);
     }
 
 
@@ -338,30 +338,36 @@ function Drawer(id, webglErrorFunction){
     };
 
 
-    this.historyManager = new HistoryManager(
-        new Historian()
-    );
+    // Constructor
+    this.constructor = function(id, webglErrorFunction){
+        this.historyManager = new HistoryManager(
+            new Historian()
+        );
 
-    this.color = [0,0,0,1];
-    this.activeTexture = 0;
-    this.scale = [1, 1];
-    this.texScale = [1, 1];
-    this.texResolution = [0, 0];
-    this.baseTextureTranslation = [0, 0];
+        this.color = [0,0,0,1];
+        this.activeTexture = 0;
+        this.scale = [1, 1];
+        this.texScale = [1, 1];
+        this.texResolution = [0, 0];
+        this.baseTextureTranslation = [0, 0];
 
-    this.translation = [0, 0];
-    this.texTranslation = [0, 0];
+        this.translation = [0, 0];
+        this.texTranslation = [0, 0];
 
-    var canvas = document.getElementById(id);
-    this.gl = canvas.getContext("webgl");
-    if (!this.gl) {
-        webglErrorFunction();
+        var canvas = document.getElementById(id);
+        this.gl = canvas.getContext("webgl");
+        if (!this.gl) {
+            webglErrorFunction();
+        }
+        else{
+            this.setup();
+        }
+        window.addEventListener("resize", function(){
+            drawer.gl.uniform2f(drawer.resolutionUniformLocation, drawer.gl.canvas.width, drawer.gl.canvas.height);
+            drawer.redraw();
+        });
     }
-    else{
-        this.setup();
-    }
-    window.addEventListener("resize", function(){
-        drawer.gl.uniform2f(drawer.resolutionUniformLocation, drawer.gl.canvas.width, drawer.gl.canvas.height);
-        drawer.redraw();
-    });
+
+    // Main
+    this.constructor(id, webglErrorFunction);
 }
