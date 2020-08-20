@@ -210,6 +210,7 @@ function Drawer(id, webglErrorFunction){
 
     this.setUseTexture = function(slut){
         this.activeTexture = slut;
+        this.historyManager.setTexture(this.activeTexture);
         this.gl.uniform1i(this.textureLocation, slut);
         // console.log("Fragment shader texture usage setted to TEXTURE" + slut);
     }
@@ -311,6 +312,7 @@ function Drawer(id, webglErrorFunction){
             if(key.charAt(0) == "#"){ // Use Texture
                 let slut = parseInt(key.substring(1));
                 this.setTextureEnable();
+                this.setUseTexture(slut);
             }
             else{ // Use Color
                 this.setColorEnable();
@@ -605,9 +607,7 @@ function PositionMaker(){
             this.loadTexture(image, slut);
         });
 
-        console.log(1245);
         callback(imagesToTextureMap);
-        console.log(5643);
     }
 
 

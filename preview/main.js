@@ -37,7 +37,6 @@ var positionMaker = new PositionMaker();
 
 
 let callback = function(data){
-    console.log(111);
     cd.drawer.setTextureEnable();
     cd.drawer.setTextureResolution(512, 512);
     cd.drawer.setUseTexture(0);

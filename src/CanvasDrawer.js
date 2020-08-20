@@ -35,9 +35,7 @@ function CanvasDrawer(info){
             this.loadTexture(image, slut);
         });
 
-        console.log(1245);
         callback(imagesToTextureMap);
-        console.log(5643);
     }
 
 
