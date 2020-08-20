@@ -122,7 +122,7 @@ function Drawer(id, webglErrorFunction){
 
     this.setColor = function(r, g, b, a){
         this.setColorVanilla(r,g,b,a);
-        this.historian.setColor(r,g,b,a);
+        this.historyManager.setColor(r,g,b,a);
     }
 
     this.setColorVanilla = function(r, g, b, a){
@@ -131,7 +131,7 @@ function Drawer(id, webglErrorFunction){
     
     this.setPositions = function(positions){
         this.setPositionsVanilla(positions);
-        this.historian.submitVanilla(positions);
+        this.historyManager.submitVanilla(positions);
     }
 
     this.setPositionsVanilla = function(positions){
@@ -153,12 +153,12 @@ function Drawer(id, webglErrorFunction){
     this.clear = function(r,g,b,a){
         this.gl.clearColor(r,g,b,a);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.historian.forget();
+        this.historyManager.forget();
     };
 
     this.repeatTheHistory = function(){
-        let keys = this.historian.getKeys();
-        let memo = this.historian.getMemo();
+        let keys = this.historyManager.getKeys();
+        let memo = this.historyManager.getMemo();
 
         for(let i = 0;i < keys.length;i ++){
             let key = keys[i];
@@ -318,7 +318,10 @@ function Drawer(id, webglErrorFunction){
     };
 
 
-    this.historian = new Historian();
+    this.historyManager = new HistoryManager(
+        new Historian()
+    );
+
     this.scale = [1, 1];
     this.texScale = [1, 1];
     this.texResolution = [0, 0];

@@ -3,10 +3,9 @@
 function Historian(){
     this.memo = {};
     this.keys = [];
-    this.r = this.g = this.b = this.a = 0;
+    this.key = "-1";
 
-    this.submit = function(positions, r, g, b, a){
-        let key = "" + r + " " + g + " " + b + " " + a;
+    this.submit = function(positions, key){
         if(! (key in this.memo)){
             this.keys.push(key);
             this.memo[key] = [];
@@ -16,14 +15,11 @@ function Historian(){
     }
 
     this.submitVanilla = function(positions){
-        this.submit(positions, this.r, this.g, this.b, this.a);
+        this.submit(positions, this.key);
     }
 
-    this.setColor = function(r,g,b,a){
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+    this.setKey = function(key){
+        this.key = key;
     }
 
     this.forget = function(){

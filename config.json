@@ -2,6 +2,7 @@
     "compile":[
         {
             "files": [
+                "src/HistoryManager.js",
                 "src/Historian.js",
                 "src/Cartographer.js",
                 "src/Drawer.js",
