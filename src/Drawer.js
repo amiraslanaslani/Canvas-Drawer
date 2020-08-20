@@ -76,7 +76,7 @@ function Drawer(id, webglErrorFunction){
 
     this.setUseTexture = function(slut){
         this.activeTexture = slut;
-        this.historyManager.setTexture(this.activeTexture);
+        this.historyManager.setTextureSlut(this.activeTexture);
         this.gl.uniform1i(this.textureLocation, slut);
         // console.log("Fragment shader texture usage setted to TEXTURE" + slut);
     }
@@ -90,7 +90,7 @@ function Drawer(id, webglErrorFunction){
 
 
     this.setTextureEnable = function(){
-        this.historyManager.setTexture(this.activeTexture);
+        this.historyManager.setTextureSlut(this.activeTexture);
         this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
         this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
     }
@@ -176,9 +176,22 @@ function Drawer(id, webglErrorFunction){
             let key = keys[i];
 
             if(key.charAt(0) == "#"){ // Use Texture
-                let slut = parseInt(key.substring(1));
+                let data = key.substring(1);
+                data = data.split(":");
+
                 this.setTextureEnable();
-                this.setUseTexture(slut);
+                
+                for(let j = 0;j < data.length;j ++){
+                    data[j] = parseInt(data[j]);
+                }
+                
+                this.setUseTexture(data[0]);
+                this.setTextureResolutionVanilla(data[1], data[2]);
+                this.textureUserTranslation = [
+                    data[3] * this.texScale[0], 
+                    data[4] * this.texScale[1]
+                ];
+                this.setTextureTranslationFromValuesToShader();
             }
             else{ // Use Color
                 this.setColorEnable();
@@ -214,14 +227,22 @@ function Drawer(id, webglErrorFunction){
 
     this.setTextureScale = function(scale){
         this.texScale = [scale, scale];
-        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
-        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
+        this.updateTextureValues();
+    }
+
+    this.setTextureResolutionVanilla = function(w, h){
+        this.texResolution = [w, h];
+        this.updateTextureValues();
     }
 
     this.setTextureResolution = function(w, h){
-        this.texResolution = [w, h];
+        this.setTextureResolutionVanilla(w, h);
+        this.historyManager.setTextureResolution(w, h);
+    }
+
+    this.updateTextureValues = function(){
         this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
-        this.setShaderTextureResolution(this.texScale[0] * w, this.texScale[1] * h);
+        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
     }
 
     this.setShaderTextureResolution = function(w, h){
@@ -233,28 +254,34 @@ function Drawer(id, webglErrorFunction){
         this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
     }
 
-    this.setTextureTranslation = function(tx, ty){
+    this.setTextureTranslationVanilla = function(tx, ty){
         this.texTranslation = [tx, ty];
+        this.setTextureTranslationFromValuesToShader();
+    }
+
+    this.setTextureTranslationFromValuesToShader = function(){
         this.gl.uniform2fv(
             this.textureTranslationLocation, 
             [
-                this.texTranslation[0] + this.baseTextureTranslation[0],
-                this.texTranslation[1] + this.baseTextureTranslation[1]
+                this.texTranslation[0] + this.baseTextureTranslation[0] + this.textureUserTranslation[0],
+                this.texTranslation[1] + this.baseTextureTranslation[1] + this.textureUserTranslation[1]
             ]
         );
+    }
+
+    this.setTextureUserTranslation = function(tx, ty){
+        this.historyManager.setTextureTranslation(tx, ty);
+        this.textureUserTranslation = [tx, ty];
+    };
+
+    this.setTextureTranslation = function(tx, ty){
+        this.setTextureTranslationVanilla(tx, ty);
     };
 
     this.updateTranslation = function(tx, ty){
         this.setTranslation(tx, ty);
         this.redraw();
     };
-
-    this.updateRelativeTranslaton = function(rx, ry){
-        this.updateTranslation(
-            this.translation[0] + rx, 
-            this.translation[1] + ry
-        );
-    }
 
     this.redraw = function(){
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -352,6 +379,7 @@ function Drawer(id, webglErrorFunction){
         this.texScale = [1, 1];
         this.texResolution = [0, 0];
         this.baseTextureTranslation = [0, 0];
+        this.textureUserTranslation = [0, 0];
 
         this.translation = [0, 0];
         this.texTranslation = [0, 0];
@@ -365,8 +393,8 @@ function Drawer(id, webglErrorFunction){
             this.setup();
         }
         window.addEventListener("resize", function(){
-            drawer.gl.uniform2f(drawer.resolutionUniformLocation, drawer.gl.canvas.width, drawer.gl.canvas.height);
-            drawer.redraw();
+            this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+            this.redraw();
         });
     }
 

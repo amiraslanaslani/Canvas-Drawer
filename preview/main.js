@@ -20,7 +20,8 @@ let callback = function(data){
     cd.positionMaker.addPolygon([0,0, 256,0, 256,256, 0,256]);
     cd.justDraw();
 
-    cd.drawer.setTextureTranslation(128, 128);
+    // cd.drawer.setTextureTranslation(128, 128);
+    cd.drawer.setTextureUserTranslation(128, 128);
     cd.drawer.setTextureResolution(768, 768);
     cd.drawer.setUseTexture(1);
     cd.positionMaker.addPolygon([128,128, 512,128, 512,512, 128,512]);
