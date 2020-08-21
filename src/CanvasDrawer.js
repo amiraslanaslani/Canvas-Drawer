@@ -1,6 +1,16 @@
+/**
+ * Get info object and set values.
+ * 
+ * @param {Object} info 
+ * @param {string} info.id id of canvas element
+ * @param {function} info.errorFunction callback function for when user cannot use webgl
+ * @param {boolean} info.isCartographerEnable value is True when you want zoomin/out and translation with mouse
+ * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
+ * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+ */
 function CanvasDrawer(info){
     /**
-     * Get value of specific key. If key not found in ``this.info`` object
+     * Get value of a specific key. If key not found in ``this.info`` object
      * then returns defaultValue.
      * 
      * @param {string} name key name
@@ -13,7 +23,7 @@ function CanvasDrawer(info){
 
 
     /**
-     * Draw shapes that are added to the Position Maker with specific 
+     * Draw shapes that are added to the Position Maker with a specific 
      * color and reset the Position Maker.
      * 
      * @param {integer} r red color in range 0-1
@@ -53,7 +63,7 @@ function CanvasDrawer(info){
      * @param {function} callback callback function
      */
     this.imagesLoadTexture = function(images, callback=(imagesToTextureMap)=>{}){
-        var imageLoadSlut = 0;
+        var imageLoadUnit = 0;
         var imagesToTextureMap = [];
         var maximumTextureUnits = this.drawer.getMaximumTextureUnits();
 
@@ -159,14 +169,44 @@ function CanvasDrawer(info){
 
         // Set Position Maker
         this.positionMaker = new PositionMaker();
-
-        this.addPolygon = (vertices)=>this.positionMaker.addPolygon(vertices);
-        this.addLine = (x1,y1,x2,y2,width)=>this.positionMaker.addLine(x1,y1,x2,y2,width);
-        this.addCircle = (cx,cy,r,cuts=15)=>this.positionMaker.addCircle(cx,cy,r,cuts=15);
-        this.addSequenceLine = (positions, width)=>this.positionMaker.addSequenceLine(positions, width);
     }
 
 
     // Main
     this.constructor(info);
+
+    /**
+     * Get array of values and add represented polygon to ``Position Maker``.
+     * 
+     * @param {number[]} vertices sequence of ``X``s and ``Y``s of vertices of polygon. For example ``[0,0, 50,0, 50,50, 0,50]`` represents an square
+     */
+    this.addPolygon = (vertices)=>this.positionMaker.addPolygon(vertices);
+    
+    
+    /**
+     * Add a line between ``P1`` and ``P2`` to ``Positon Maker``.
+     * 
+     * @param {number} x1 X of P1
+     * @param {number} y1 Y of P1
+     * @param {number} x2 X of P2
+     * @param {number} y2 Y of P2
+     * @param {number} width width of line
+     */
+    this.addLine = (x1,y1,x2,y2,width)=>this.positionMaker.addLine(x1,y1,x2,y2,width);
+    
+    /**
+     * Add a circle ``Positon Maker`` that centered on ``P`` with radius of ``R``.
+     * @param {number} cx X of P
+     * @param {number} cy Y of P
+     * @param {number} r radius
+     * @param {integer} cuts number of triangles to draw circle
+     */
+    this.addCircle = (cx,cy,r,cuts=15)=>this.positionMaker.addCircle(cx,cy,r,cuts=15);
+    
+    /**
+     * Add multiple lines to ``Position Maker``
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an L shape line
+     * @param {number} width line width
+     */
+    this.addSequenceLine = (positions, width)=>this.positionMaker.addSequenceLine(positions, width);
 }

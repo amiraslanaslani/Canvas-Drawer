@@ -1,7 +1,16 @@
 "use strict";
 
+/**
+ * Manages the drawing procedure
+ * 
+ * @param {string} id id of canvas element
+ * @param {function} webglErrorFunction callback function for when user cannot use webgl
+ */
 function Drawer(id, webglErrorFunction){
 
+    /**
+     * Vertex Shader
+     */
     this.vertexShaderSource = `
         attribute vec2 a_position;
         uniform vec2 u_resolution;
@@ -20,6 +29,9 @@ function Drawer(id, webglErrorFunction){
         }
     `;
 
+    /**
+     * Fragment Shader
+     */
     this.fragmentShaderSource = `
         precision mediump float;
         uniform vec4 u_color;
@@ -55,16 +67,18 @@ function Drawer(id, webglErrorFunction){
         }
     `;
 
-    // Texure Unit
-    
-    this.activeTextureUnit = -1;
-
-
+    /**
+     * @returns {integer} Maximum Texture Units Number
+     */
     this.getMaximumTextureUnits = function(){
         return this.gl.getParameter(this.gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
     }
 
-
+    /**
+     * Get a texture unit and activate it
+     * @param {integer} value texture unit
+     * @returns {boolean} if texture unit number is not in valid range return true otherwise return false
+     */
     this.setActiveTextureUnit = function(value){ // value is -1 for color and 0 until (gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1) for texture units
         if(value < 0 || value >= this.getMaximumTextureUnits())
             return false;
@@ -74,109 +88,305 @@ function Drawer(id, webglErrorFunction){
         return true;
     }
 
-
-    this.setTexture = function(image, slut){
-        this.setActiveTextureUnit(slut);
+    /**
+     * Set image to specific texture unit
+     * @param {Image} image 
+     * @param {integer} unit 
+     */
+    this.setTexture = function(image, unit){
+        this.setActiveTextureUnit(unit);
         let tex = this.gl.createTexture();
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.gl.RGB, this.gl.UNSIGNED_BYTE, image);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-        console.log("Texture is loaded to TEXTURE" + slut);
+        console.log("Texture is loaded to TEXTURE" + unit);
     }
 
-
-    this.setUseTexture = function(slut){
-        this.activeTexture = slut;
+    /**
+     * Set fragment shader to read texture from specific texture unit.
+     * @param {integer} unit 
+     */
+    this.setUseTexture = function(unit){
+        this.activeTexture = unit;
         this.historyManager.setTextureSlut(this.activeTexture);
-        this.gl.uniform1i(this.textureLocation, slut);
-        // console.log("Fragment shader texture usage setted to TEXTURE" + slut);
+        this.gl.uniform1i(this.textureLocation, unit);
+        // console.log("Fragment shader texture usage setted to TEXTURE" + unit);
     }
 
-
+    /**
+     * Set fragment shader to read from active texture unit
+     */
     this.setColorEnable = function(){
         this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
         this.gl.uniform1i(this.colorTextureFlag, 0);
     }
 
-
+    /**
+     * Set fragment shader to read from color uniform
+     */
     this.setTextureEnable = function(){
         this.historyManager.setTextureSlut(this.activeTexture);
         this.gl.uniform1i(this.colorTextureFlag, 1);
     }
 
-
-    // Program Setups
-
-    this.createShader = function(type, source) {
-        var shader = this.gl.createShader(type);
-        this.gl.shaderSource(shader, source);
-        this.gl.compileShader(shader);
-        var success = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
-        if (success) {
-            return shader;
-        }
-    
-        console.log(this.gl.getShaderInfoLog(shader));
-        this.gl.deleteShader(shader);
-    };
-
-
-    this.createProgram = function(vertexShader, fragmentShader) {
-        var program = this.gl.createProgram();
-        this.gl.attachShader(program, vertexShader);
-        this.gl.attachShader(program, fragmentShader);
-        this.gl.linkProgram(program);
-        var success = this.gl.getProgramParameter(program, this.gl.LINK_STATUS);
-        if (success) {
-            return program;
-        }
-    
-        console.log(this.gl.getProgramInfoLog(program));
-        this.gl.deleteProgram(program);
-    };
-
+    /**
+     * Set color to fragment shader and submit in the history
+     * 
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.setColor = function(r, g, b, a){
         this.setColorVanilla(r,g,b,a);
         this.historyManager.setColor(r,g,b,a);
     }
 
+    /**
+     * Set color to fragment shader but don't submit in the history
+     * 
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.setColorVanilla = function(r, g, b, a){
         this.color = [r,g,b,a];
         this.gl.uniform4f(this.colorUniformLocation, r, g, b, a);
     }
     
+    /**
+     * Submit vertices to the Array Buffer and submited in the history 
+     * @param {*} positions 
+     */
     this.setPositions = function(positions){
         this.setPositionsVanilla(positions);
         this.historyManager.submitVanilla(positions);
     }
 
+    /**
+     * Submit vertices to the Array Buffer
+     * @param {number[]} positions array of vertices ``[x1, y1, x2, y2, ...]``
+     */
     this.setPositionsVanilla = function(positions){
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
     }
 
+    /**
+     * Draw triangles that are passed.
+     * 
+     * @param {number[]} positions array of vertices ``[x1, y1, x2, y2, ...]``
+     */
     this.justDraw = function(positions){
         this.setPositions(positions);
         this.drawFromBuffer(positions.length / 2);
     }
 
+    /**
+     * Draw triangles are passed with a specific color.
+     * 
+     * @param {*} positions array of vertices ``[x1, y1, x2, y2, ...]``
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.draw = function(positions, r, g, b, a){
         this.setColor(r,g,b,a);
         this.setPositions(positions);
         this.drawFromBuffer(positions.length / 2);
     };
 
+    /**
+     * Draw triangles in the Array Buffer
+     * 
+     * @param {integer} count number of vertices
+     */
     this.drawFromBuffer = function(count){
         var primitiveType = this.gl.TRIANGLES;
         var offset = 0;
         this.gl.drawArrays(primitiveType, offset, count);
     };
 
+    /**
+     * Clear screen with passed color and reset the history.
+     * 
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.clear = function(r,g,b,a){
         this.gl.clearColor(r,g,b,a);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.historyManager.forget();
     };
 
+    /**
+     * Change scale value.
+     * 
+     * @param {number} scale new scale
+     */
+    this.setScale = function(scale){
+        this.scale = [scale, scale];
+        this.gl.uniform2fv(this.scaleLocation, this.scale);
+    };
+
+    /**
+     * Change scale value and redraw every shape
+     * 
+     * @param {number} scale new scale
+     */
+    this.updateScale = function(scale){
+        this.setScale(scale);
+        this.redraw();
+    };
+
+    /**
+     * Change translation value.
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.setTranslation = function(tx, ty){
+        this.translation = [tx, ty];
+        this.gl.uniform2fv(this.translationLocation, this.translation);
+    };
+
+    /**
+     * Update texture scale value and redraw every shape.
+     * 
+     * @param {number} scale new scale value
+     */
+    this.updateTextureScale = function(scale){
+        this.setTextureScale(scale);
+        this.redraw();
+    }
+
+    /**
+     * Update texture scale value and calculate required settings.
+     * 
+     * @param {number} scale new scale value
+     */
+    this.setTextureScale = function(scale){
+        this.texScale = [scale, scale];
+        this.updateTextureValues();
+    }
+
+    /**
+     * Reset some values calculated for texture by program. For 
+     * example reset Base Translation of texture.
+     */
+    this.updateTextureValues = function(){
+        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
+        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
+    }
+
+    /**
+     * Updates shader uniform that keeps textures resolution and
+     * submit that in history.
+     * 
+     * @param {number} w width of texture
+     * @param {number} h heigt of texture
+     */
+    this.setTextureResolution = function(w, h){
+        this.setTextureResolutionVanilla(w, h);
+        this.historyManager.setTextureResolution(w, h);
+    }
+
+    /**
+     * Updates shader uniform that keeps textures resolution and
+     * doesn't submit that in history.
+     * 
+     * @param {number} w width of texture
+     * @param {number} h heigt of texture
+     */
+    this.setTextureResolutionVanilla = function(w, h){
+        this.texResolution = [w, h];
+        this.updateTextureValues();
+    }
+
+    /**
+     * Updates shader uniform that keeps textures resolution.
+     * 
+     * @param {number} w width of texture
+     * @param {number} h heigt of texture
+     */
+    this.setShaderTextureResolution = function(w, h){
+        this.gl.uniform2f(this.textureResolutionUniformLocation, w, h);
+    }
+
+    /**
+     * Set texture translation value from local variables to shader's uniform
+     */
+    this.setTextureTranslationFromValuesToShader = function(){
+        this.gl.uniform2fv(
+            this.textureTranslationLocation, 
+            [
+                this.texTranslation[0] + this.baseTextureTranslation[0] + this.textureUserTranslation[0],
+                this.texTranslation[1] + this.baseTextureTranslation[1] + this.textureUserTranslation[1]
+            ]
+        );
+    }
+
+    /**
+     * Change texture's base translation and set it's value to shader's uniform.
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.setBaseTextureTranslation = function(tx, ty){
+        this.baseTextureTranslation = [tx, ty];
+        this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
+    }
+
+    /**
+     * Set user-defined translation
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.setTextureUserTranslation = function(tx, ty){
+        this.historyManager.setTextureTranslation(tx, ty);
+        this.textureUserTranslation = [tx, ty];
+    };
+
+    /**
+     * Change texture translation and set it's value to shader's uniform.
+     * Calls ``Drawer.setTextureTranslationVanilla(tx, ty)``
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.setTextureTranslation = function(tx, ty){
+        this.setTextureTranslationVanilla(tx, ty);
+    };
+
+    /**
+     * Change texture translation and set it's value to shader's uniform.
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.setTextureTranslationVanilla = function(tx, ty){
+        this.texTranslation = [tx, ty];
+        this.setTextureTranslationFromValuesToShader();
+    }
+
+    /**
+     * Update vertex translation value and redraw every shape.
+     * 
+     * @param {number} tx X value of translation
+     * @param {number} ty Y value of translation
+     */
+    this.updateTranslation = function(tx, ty){
+        this.setTranslation(tx, ty);
+        this.redraw();
+    };
+    
+    /**
+     * Redraw any shape in history.
+     */
     this.repeatTheHistory = function(){
         let keys = this.historyManager.getKeys();
         let memo = this.historyManager.getMemo();
@@ -214,102 +424,20 @@ function Drawer(id, webglErrorFunction){
         }
     };
 
-    this.setScale = function(scale){
-        this.scale = [scale, scale];
-        this.gl.uniform2fv(this.scaleLocation, this.scale);
-    };
-
-    this.updateScale = function(scale){
-        this.setScale(scale);
-        this.redraw();
-    };
-
-    this.setTranslation = function(tx, ty){
-        this.translation = [tx, ty];
-        this.gl.uniform2fv(this.translationLocation, this.translation);
-    };
-
-    this.updateTextureScale = function(scale){
-        this.setTextureScale(scale);
-        this.redraw();
-    }
-
-    this.setTextureScale = function(scale){
-        this.texScale = [scale, scale];
-        this.updateTextureValues();
-    }
-
-    this.setTextureResolutionVanilla = function(w, h){
-        this.texResolution = [w, h];
-        this.updateTextureValues();
-    }
-
-    this.setTextureResolution = function(w, h){
-        this.setTextureResolutionVanilla(w, h);
-        this.historyManager.setTextureResolution(w, h);
-    }
-
-    this.updateTextureValues = function(){
-        this.setBaseTextureTranslation(0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1])));
-        this.setShaderTextureResolution(this.texScale[0] * this.texResolution[0], this.texScale[1] * this.texResolution[1]);
-    }
-
-    this.setShaderTextureResolution = function(w, h){
-        this.gl.uniform2f(this.textureResolutionUniformLocation, w, h);
-    }
-
-    this.setBaseTextureTranslation = function(x, y){
-        this.baseTextureTranslation = [x, y];
-        this.setTextureTranslation(this.texTranslation[0], this.texTranslation[1]);
-    }
-
-    this.setTextureTranslationVanilla = function(tx, ty){
-        this.texTranslation = [tx, ty];
-        this.setTextureTranslationFromValuesToShader();
-    }
-
-    this.setTextureTranslationFromValuesToShader = function(){
-        this.gl.uniform2fv(
-            this.textureTranslationLocation, 
-            [
-                this.texTranslation[0] + this.baseTextureTranslation[0] + this.textureUserTranslation[0],
-                this.texTranslation[1] + this.baseTextureTranslation[1] + this.textureUserTranslation[1]
-            ]
-        );
-    }
-
-    this.setTextureUserTranslation = function(tx, ty){
-        this.historyManager.setTextureTranslation(tx, ty);
-        this.textureUserTranslation = [tx, ty];
-    };
-
-    this.setTextureTranslation = function(tx, ty){
-        this.setTextureTranslationVanilla(tx, ty);
-    };
-
-    this.updateTranslation = function(tx, ty){
-        this.setTranslation(tx, ty);
-        this.redraw();
-    };
-
+    /**
+     * Redraw any shape in history. (Call ``Drawer.repeatTheHistory()`` )
+     */
     this.redraw = function(){
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.gl.useProgram(this.program);
-        this.gl.enableVertexAttribArray(this.positionLocation);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-
-        var size = 2;          // 2 components per iteration
-        var type = this.gl.FLOAT;   // the data is 32bit floats
-        var normalize = false; // don't normalize the data
-        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        var offset = 0;        // start at the beginning of the buffer
-        this.gl.vertexAttribPointer(this.positionLocation, size, type, normalize, stride, offset);
-
         // Draw the geometry.
         this.repeatTheHistory();
     }
 
+    /**
+     * Change scale centered on point P
+     * @param {number} newScale 
+     * @param {number} x x value of P
+     * @param {number} y y value of P
+     */
     this.updateScaleIntoPoint = function(newScale, x, y){
         let scaleRatio = newScale / this.scale[0];
         this.setScale(newScale);
@@ -324,7 +452,51 @@ function Drawer(id, webglErrorFunction){
         );
         this.redraw();
     }
+    
+    /**
+     * Create WebGL shader object from given data.
+     * 
+     * @param {number} type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+     * @param {string} source GLSL source code of shader
+     * @returns {WebGLShader} webgl shader object
+     */
+    this.createShader = function(type, source) {
+        var shader = this.gl.createShader(type);
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+        var success = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
+        if (success) {
+            return shader;
+        }
+    
+        console.log(this.gl.getShaderInfoLog(shader));
+        this.gl.deleteShader(shader);
+    };
 
+    /**
+     * Create WebGL program object from given data.
+     * 
+     * @param {WebGLShader} vertexShader vertex shader
+     * @param {WebGLShader} fragmentShader fragment shader
+     * @returns {WebGLProgram} webgl program object
+     */
+    this.createProgram = function(vertexShader, fragmentShader) {
+        var program = this.gl.createProgram();
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+        var success = this.gl.getProgramParameter(program, this.gl.LINK_STATUS);
+        if (success) {
+            return program;
+        }
+    
+        console.log(this.gl.getProgramInfoLog(program));
+        this.gl.deleteProgram(program);
+    };
+
+    /**
+     * Initialize variables and uniforms
+     */
     this.setup = function(){
         var vertexShaderSource = this.vertexShaderSource;
         var fragmentShaderSource = this.fragmentShaderSource;
@@ -343,18 +515,13 @@ function Drawer(id, webglErrorFunction){
         this.textureResolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_tex_resolution");
         this.textureTranslationLocation = this.gl.getUniformLocation(this.program, "u_tex_translation");
         
-        // this.colorMaskLocation = this.gl.getUniformLocation(this.program, "u_color_mask");
-        // this.textureMaskLocation = this.gl.getUniformLocation(this.program, "u_texture_mask");
         this.colorTextureFlag = this.gl.getUniformLocation(this.program, "u_color_texture_flag");
-
 
         this.clear(0,0,0,0);
         this.gl.uniform2fv(this.scaleLocation, this.scale);
         this.gl.uniform2fv(this.translationLocation, this.translation);
         this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
 
-        // this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
-        // this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
         this.gl.uniform1i(this.colorTextureFlag, 0);
 
         this.positionBuffer = this.gl.createBuffer();
@@ -362,11 +529,11 @@ function Drawer(id, webglErrorFunction){
         this.gl.enableVertexAttribArray(this.positionAttributeLocation);
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
-        var size = 2;          // 2 components per iteration
+        var size = 2;               // 2 components per iteration
         var type = this.gl.FLOAT;   // the data is 32bit floats
-        var normalize = false; // don't normalize the data
-        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        var offset = 0;        // start at the beginning of the buffer
+        var normalize = false;      // don't normalize the data
+        var stride = 0;             // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0;             // start at the beginning of the buffer
         this.gl.vertexAttribPointer(
             this.positionAttributeLocation, size, type, normalize, stride, offset
         );
@@ -375,16 +542,21 @@ function Drawer(id, webglErrorFunction){
         this.gl.uniform2f(this.textureResolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.texResolution = [this.gl.canvas.width, this.gl.canvas.height];
         this.baseTextureTranslation = [0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1]))];
-        
     };
 
 
-    // Constructor
+    /**
+     * Construction Function
+     * 
+     * @param {string} id id of canvas element
+     * @param {function} webglErrorFunction callback function for when user cannot use webgl
+     */
     this.constructor = function(id, webglErrorFunction){
         this.historyManager = new HistoryManager(
             new Historian()
         );
 
+        this.activeTextureUnit = -1;
         this.color = [0,0,0,1];
         this.activeTexture = 0;
         this.scale = [1, 1];
@@ -404,10 +576,6 @@ function Drawer(id, webglErrorFunction){
         else{
             this.setup();
         }
-        // window.addEventListener("resize", function(){
-        //     cd.drawer.gl.uniform2f(cd.drawer.resolutionUniformLocation, cd.drawer.gl.canvas.width, cd.drawer.gl.canvas.height);
-        //     cd.drawer.redraw();
-        // });
     }
 
     // Main
