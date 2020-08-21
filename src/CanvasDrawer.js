@@ -38,7 +38,14 @@ function CanvasDrawer(info){
         callback(imagesToTextureMap);
     }
 
-
+    /**
+     * This function will accept an array of some images path and load 
+     * them to texture units. When all images are loaded to texture units 
+     * then calls the callback function.
+     * 
+     * @param {string[]} imagesList array of images path
+     * @param {function} callback callback function
+     */
     this.loadMultiImageToTextures = function(imagesList, callback=()=>{}){
         var imagesLoaded = 0;
         var imagesCount = imagesList.length;

@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-21T05:55:06.773Z (Fri, 21 Aug 2020 05:55:06 GMT)
+ * Date: 2020-08-21T12:44:09.715Z (Fri, 21 Aug 2020 12:44:09 GMT)
  */
 
 "use strict";
@@ -691,7 +691,14 @@ function PositionMaker(){
         callback(imagesToTextureMap);
     }
 
-
+    /**
+     * This function will accept an array of some images path and load 
+     * them to texture units. When all images are loaded to texture units 
+     * then calls the callback function.
+     * 
+     * @param {string[]} imagesList array of images path
+     * @param {function} callback callback function
+     */
     this.loadMultiImageToTextures = function(imagesList, callback=()=>{}){
         var imagesLoaded = 0;
         var imagesCount = imagesList.length;

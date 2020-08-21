@@ -3,6 +3,8 @@ const fs = require('fs');
 const { minify } = require("terser");
 const mustache = require('mustache');
 const chalk = require('chalk');
+const jsdoc2md = require('jsdoc-to-markdown')
+const path = require('path');
 
 const CONFIG = require('../config.json');
 
@@ -57,10 +59,18 @@ CONFIG.compile.forEach(compile => {
     let lines = 0;
 
     compile.files.forEach(async (file) => {
-        allFilesList.push(file)
         let contents = fs.readFileSync(file, 'utf8');
+        
+        // JSDoc
+        name = path.basename(file).split(".")[0];
+        let jsdocmd = jsdoc2md.renderSync({ files: file });
+        let mdFile = CONFIG.doc.jsdoc + name + ".md";
+        fs.writeFileSync(mdFile, jsdocmd, {flag: "w"}); 
+        fileLog(mdFile, "markdown file updated");
+
+        // Join Files
+        allFilesList.push(file)
         finalCode = finalCode + LINE_BREAK + contents;
-        // console.log("%s: readed and added to memory.", file);
         fileLog(file, "readed and added to memory");
     });
 
@@ -71,7 +81,6 @@ CONFIG.compile.forEach(compile => {
     let mainFile = DIST_PATH + compile.dist.main;
     fs.writeFileSync(mainFile, finalCode, {flag: "w"}); 
     singleFiles.push(mainFile);
-    // console.log(chalk.yellow(mainFile + ": File updated (" + totalLines + " Lines of code)"));
     fileLog(mainFile, "File updated (" + totalLines + " Lines of code)");
 
     // Minified File
