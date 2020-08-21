@@ -96,16 +96,12 @@ function Drawer(id, webglErrorFunction){
     this.setColorEnable = function(){
         this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
         this.gl.uniform1i(this.colorTextureFlag, 0);
-        // this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
-        // this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
     }
 
 
     this.setTextureEnable = function(){
         this.historyManager.setTextureSlut(this.activeTexture);
         this.gl.uniform1i(this.colorTextureFlag, 1);
-        // this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
-        // this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
     }
 
 

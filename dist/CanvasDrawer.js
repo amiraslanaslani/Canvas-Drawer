@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-21T12:44:09.715Z (Fri, 21 Aug 2020 12:44:09 GMT)
+ * Date: 2020-08-21T13:21:18.652Z (Fri, 21 Aug 2020 13:21:18 GMT)
  */
 
 "use strict";
@@ -267,16 +267,12 @@ function Drawer(id, webglErrorFunction){
     this.setColorEnable = function(){
         this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
         this.gl.uniform1i(this.colorTextureFlag, 0);
-        // this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
-        // this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
     }
 
 
     this.setTextureEnable = function(){
         this.historyManager.setTextureSlut(this.activeTexture);
         this.gl.uniform1i(this.colorTextureFlag, 1);
-        // this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
-        // this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
     }
 
 
@@ -652,31 +648,60 @@ function PositionMaker(){
     this.reset();
 }
 function CanvasDrawer(info){
-
+    /**
+     * Get value of specific key. If key not found in ``this.info`` object
+     * then returns defaultValue.
+     * 
+     * @param {string} name key name
+     * @param {*} defaultValue value
+     * @returns {*} value of key
+     */
     this.loadDataFromInfo = function(name, defaultValue) {
         return (name in this.info) ? this.info[name] : defaultValue;
     };
 
 
-    // Drawer's APIs
+    /**
+     * Draw shapes that are added to the Position Maker with specific 
+     * color and reset the Position Maker.
+     * 
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.draw = function(r, g, b, a){
         this.drawer.draw(this.positionMaker.positions, r, g, b, a);
         this.positionMaker.reset();
     }
 
-
+    /**
+     * Draw shapes that are added to the Position Maker and reset that.
+     */
     this.justDraw = function(){
         this.drawer.justDraw(this.positionMaker.positions);
         this.positionMaker.reset();
     }
 
-
-    this.loadTexture = function(image, slut){
-        this.drawer.setTexture(image, slut);
+    /**
+     * Call Drawer.setTexture(image, slut)
+     * 
+     * @param {Image} image 
+     * @param {*} slut 
+     */
+    this.loadTexture = function(image, unit){
+        this.drawer.setTexture(image, unit);
     }
 
-
-    this.imagesLoadTexture = function(images, callback=()=>{}){
+    /**
+     * Get an array of loaded Image objects and load them to texture
+     * units. When done calls the callback function with an associative
+     * array that maps image.idName to texture unit.
+     * 
+     * @param {Image[]} images array of loaded Image objects with idName attr.
+     * @param {function} callback callback function
+     */
+    this.imagesLoadTexture = function(images, callback=(imagesToTextureMap)=>{}){
         var imageLoadSlut = 0;
         var imagesToTextureMap = [];
         var maximumTextureUnits = this.drawer.getMaximumTextureUnits();
@@ -724,6 +749,16 @@ function PositionMaker(){
 
 
     // Constructor
+    /**
+     * Constructor function. Get info object and set values.
+     * 
+     * @param {Object} info 
+     * @param {string} info.id id of canvas element
+     * @param {function} info.errorFunction callback function for when user cannot use webgl
+     * @param {boolean} info.isCartographerEnable value is True when you want zoomin/out and translation with mouse
+     * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
+     * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+     */
     this.constructor = function(info){
         this.info = info;
 
@@ -768,7 +803,7 @@ function PositionMaker(){
                 drawer.updateScaleIntoPoint(scale * zoomOutRate,x,y);
             }
 
-            this.cartographer = new Cartographer("c", setReativeTranslation, getPinPoint, getTexturePinPoint, zoominAction, zoomoutAction);
+            this.cartographer = new Cartographer(id, setReativeTranslation, getPinPoint, getTexturePinPoint, zoominAction, zoomoutAction);
         }
 
         // Set Position Maker
