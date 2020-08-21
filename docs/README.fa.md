@@ -1,4 +1,4 @@
-<div style="direction: rtl; text-align: right;">
+<div dir="rtl">
 
 # Canvas Drawer
  یک بسته کوچک و ساده برای نمایش شکل های دو بعدی بر پایه WebGL
