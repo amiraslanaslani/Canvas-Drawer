@@ -27,6 +27,8 @@
 - [HistoryManager](jsdoc/HistoryManager.md)
 - [PositionMaker](jsdoc/PositionMaker.md)
 
+برای تولید این فایل ها باید از [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown) ممنون باشیم.
+
 ## روش استفاده
 همیشه اولین کار افزودن اسکریپت نهایی به برنامه است ولی پیش از آن از اینکه پیشنیاز هارا اضافه کرده اید اطمینان حاصل کنید:
 </div>
@@ -118,6 +120,7 @@ cd.loadTextures(textures, (data) => {
 
 ### اسکریپت compile
 احتمالا تغیراتی را در برنامه ایجاد کرده اید و میخواهید از آن فایل های نهایی و قابل انتشار (distribution) را تولید کنید. یا لازم است تا مستندات تولید شده از روی JSDoc ها بروز رسانی شوند.
+
 کافی است تا اسکریپت compile را اجرا کنید!
 </div>
 
