@@ -58,10 +58,10 @@ function CanvasDrawer(info){
         var maximumTextureUnits = this.drawer.getMaximumTextureUnits();
 
         images.forEach(async (image) => {
-            let slut = imageLoadSlut;
-            imageLoadSlut ++;
-            imagesToTextureMap[image.idName] = slut >= maximumTextureUnits ? -1 : slut;
-            this.loadTexture(image, slut);
+            let unit = imageLoadUnit;
+            imageLoadUnit ++;
+            imagesToTextureMap[image.idName] = unit >= maximumTextureUnits ? -1 : unit;
+            this.loadTexture(image, unit);
         });
 
         callback(imagesToTextureMap);
@@ -75,7 +75,7 @@ function CanvasDrawer(info){
      * @param {string[]} imagesList array of images path
      * @param {function} callback callback function
      */
-    this.loadMultiImageToTextures = function(imagesList, callback=()=>{}){
+    this.loadTextures = function(imagesList, callback=()=>{}){
         var imagesLoaded = 0;
         var imagesCount = imagesList.length;
         var imagesObjects = [];
@@ -159,7 +159,13 @@ function CanvasDrawer(info){
 
         // Set Position Maker
         this.positionMaker = new PositionMaker();
+
+        this.addPolygon = (vertices)=>this.positionMaker.addPolygon(vertices);
+        this.addLine = (x1,y1,x2,y2,width)=>this.positionMaker.addLine(x1,y1,x2,y2,width);
+        this.addCircle = (cx,cy,r,cuts=15)=>this.positionMaker.addCircle(cx,cy,r,cuts=15);
+        this.addSequenceLine = (positions, width)=>this.positionMaker.addSequenceLine(positions, width);
     }
+
 
     // Main
     this.constructor(info);
