@@ -25,10 +25,13 @@
   },
   "homepage": "https://github.com/amiraslanaslani/Canvas-Drawer#readme",
   "dependencies": {
-    "chalk": "^4.1.0",
     "earcut": "^2.2.2",
-    "jquery": "^3.5.1",
+    "jquery": "^3.5.1"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^6.0.1",
     "mustache": "^4.0.1",
-    "terser": "^5.2.0"
+    "terser": "^5.2.0",
+    "chalk": "^4.1.0"
   }
 }

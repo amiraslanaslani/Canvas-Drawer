@@ -15,6 +15,9 @@
             }
         }
     ],
+    "doc":{
+        "jsdoc": "docs/jsdoc/"
+    },
     "preview":{
         "template": "scripts/compile/preview.mustache",
         "comment": "scripts/compile/comment.mustache",

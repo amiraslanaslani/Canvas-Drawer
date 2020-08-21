@@ -1,6 +1,18 @@
 "use strict";
 
-function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(e){}, zoomoutCallback=function(e){}){
+/**
+ * The section of program that provide user intractions with an element.
+ * Canvas Drawer uses this to provide zoom in/out and mouse drag option.
+ * 
+ * @param {string} id ID of element in html
+ * @param {function} setReativeTranslation function that set relative translation
+ * @param {function} getPinPoint function that returns mouse pin point
+ * @param {function} getTexturePinPoint function that returns texture pin point
+ * @param {function} zoominCallback function that calls when wants to zoom in to (x, y)
+ * @param {function} zoomoutCallback function that calls when wants to zoom out to (x, y)
+ * @returns {Object} Cartographer object
+ */
+function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}){
     var selector = $('#' + id);
     var clicked = false, clickY, clickX, scrollTopTmp, scrollLeftTmp;
     selector.css('cursor', 'grab');
@@ -10,7 +22,7 @@ function Cartographer(id,setReativeTranslation, getPinPoint=function(){return [0
     var updateScrollPos = function(e) {
         let changeY = e.pageY - clickY;
         let changeX = e.pageX - clickX;
-        setReativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1], texPinPoint[0], texPinPoint[1]);
+        setRelativeTranslation(changeX, changeY, pinPoint[0], pinPoint[1], texPinPoint[0], texPinPoint[1]);
     }
 
     selector.on({
