@@ -5,6 +5,7 @@
  * 
  * @param {string} id id of canvas element
  * @param {function} webglErrorFunction callback function for when user cannot use webgl
+ * @returns {Object} Drawer object
  */
 function Drawer(id, webglErrorFunction){
 

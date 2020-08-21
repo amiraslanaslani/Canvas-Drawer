@@ -12,7 +12,7 @@
 ## Functions
 
 <dl>
-<dt><a href="#Drawer">Drawer(id, webglErrorFunction)</a></dt>
+<dt><a href="#Drawer">Drawer(id, webglErrorFunction)</a> ⇒ <code>Object</code></dt>
 <dd><p>Manages the drawing procedure</p>
 </dd>
 <dt><a href="#getMaximumTextureUnits">getMaximumTextureUnits()</a> ⇒ <code>integer</code></dt>
@@ -142,10 +142,11 @@ Fragment Shader
 **Kind**: global variable  
 <a name="Drawer"></a>
 
-## Drawer(id, webglErrorFunction)
+## Drawer(id, webglErrorFunction) ⇒ <code>Object</code>
 Manages the drawing procedure
 
 **Kind**: global function  
+**Returns**: <code>Object</code> - Drawer object  
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -1,7 +1,7 @@
 ## Functions
 
 <dl>
-<dt><a href="#CanvasDrawer">CanvasDrawer(info)</a></dt>
+<dt><a href="#CanvasDrawer">CanvasDrawer(info)</a> ⇒ <code>Object</code></dt>
 <dd><p>Get info object and set values.</p>
 </dd>
 <dt><a href="#loadDataFromInfo">loadDataFromInfo(name, defaultValue)</a> ⇒ <code>*</code></dt>
@@ -38,7 +38,7 @@ then calls the callback function.</p>
 <dd><p>Add a line between <code>P1</code> and <code>P2</code> to <code>Positon Maker</code>.</p>
 </dd>
 <dt><a href="#addCircle">addCircle(cx, cy, r, cuts)</a></dt>
-<dd><p>Add a circle <code>Positon Maker</code> that centered on <code>P</code> with radius of <code>R</code>.</p>
+<dd><p>Add a circle that centered on <code>P</code> with radius of <code>R</code>.</p>
 </dd>
 <dt><a href="#addSequenceLine">addSequenceLine(positions, width)</a></dt>
 <dd><p>Add multiple lines to <code>Position Maker</code></p>
@@ -47,10 +47,11 @@ then calls the callback function.</p>
 
 <a name="CanvasDrawer"></a>
 
-## CanvasDrawer(info)
+## CanvasDrawer(info) ⇒ <code>Object</code>
 Get info object and set values.
 
 **Kind**: global function  
+**Returns**: <code>Object</code> - CanvasDrawer object  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -175,7 +176,7 @@ Add a line between ``P1`` and ``P2`` to ``Positon Maker``.
 <a name="addCircle"></a>
 
 ## addCircle(cx, cy, r, cuts)
-Add a circle ``Positon Maker`` that centered on ``P`` with radius of ``R``.
+Add a circle that centered on ``P`` with radius of ``R``.
 
 **Kind**: global function  
 

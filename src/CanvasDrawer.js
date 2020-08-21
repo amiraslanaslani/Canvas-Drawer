@@ -7,6 +7,7 @@
  * @param {boolean} info.isCartographerEnable value is True when you want zoomin/out and translation with mouse
  * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
  * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+ * @returns {Object} CanvasDrawer object
  */
 function CanvasDrawer(info){
     /**
@@ -195,7 +196,7 @@ function CanvasDrawer(info){
     this.addLine = (x1,y1,x2,y2,width)=>this.positionMaker.addLine(x1,y1,x2,y2,width);
     
     /**
-     * Add a circle ``Positon Maker`` that centered on ``P`` with radius of ``R``.
+     * Add a circle that centered on ``P`` with radius of ``R``.
      * @param {number} cx X of P
      * @param {number} cy Y of P
      * @param {number} r radius

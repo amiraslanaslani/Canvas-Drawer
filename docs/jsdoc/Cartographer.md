@@ -1,9 +1,10 @@
 <a name="Cartographer"></a>
 
-## Cartographer(id, setReativeTranslation, getPinPoint, getTexturePinPoint, zoominCallback, zoomoutCallback)
+## Cartographer(id, setReativeTranslation, getPinPoint, getTexturePinPoint, zoominCallback, zoomoutCallback) ⇒ <code>Object</code>
 The section of program that provide user intractions with an element.Canvas Drawer uses this to provide zoom in/out and mouse drag option.
 
 **Kind**: global function  
+**Returns**: <code>Object</code> - Cartographer object  
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -6,13 +6,21 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-21T15:53:37.036Z (Fri, 21 Aug 2020 15:53:37 GMT)
+ * Date: 2020-08-21T16:32:47.892Z (Fri, 21 Aug 2020 16:32:47 GMT)
  */
 
 "use strict";
 
+/**
+ * The part of the system that connects ``Drawer`` to ``Historian``.
+ * 
+ * @param {Object} historian Historian object
+ * @returns {Object} HistoryManager object
+ */
 function HistoryManager(historian){
-
+    /**
+     * Historian object
+     */
     this.historian = historian;
 
     // Color Attr.
@@ -23,11 +31,22 @@ function HistoryManager(historian){
     this.t_resolution = [1, 1];
     this.t_translation = [0, 0];
 
+    /**
+     * Set current color to historian
+     * 
+     * @param {integer} r red color in range 0-1
+     * @param {integer} g green color in range 0-1
+     * @param {integer} b blue color in range 0-1
+     * @param {integer} a alpha color in range 0-1
+     */
     this.setColor = function(r, g, b, a){
         let key = "" + r + " " + g + " " + b + " " + a;
         this.historian.setKey(key);
     }
 
+    /**
+     * Update the historian's key with current texture values
+     */
     this.updateTextureKey = function(){
         let key =   "#" + this.t_slut + 
                     ":" + this.t_resolution[0] + // Resolution W
@@ -38,33 +57,65 @@ function HistoryManager(historian){
         this.historian.setKey(key);
     }
 
-    this.setTextureSlut = function(slut){
-        this.t_slut = slut;
+    /**
+     * Announced current texture's unit number to historian
+     * 
+     * @param {integer} unit texture unit
+     */
+    this.setTextureSlut = function(unit){
+        this.t_slut = unit;
         this.updateTextureKey();
     }
 
+    /**
+     * Announced current texture's resolution to historian
+     * @param {number} w 
+     * @param {number} h 
+     */
     this.setTextureResolution = function(w, h){
         this.t_resolution = [w, h];
         this.updateTextureKey();
     }
 
+    /**
+     * Announced current texture's translation to historian
+     * @param {number} x
+     * @param {number} y 
+     */
     this.setTextureTranslation = function(x, y){
         this.t_translation = [x, y];
         this.updateTextureKey();
     }
 
+    /**
+     * Submit passed vertices for current key ( ``HistoryManager.historian.key`` )
+     * @param {number[]} positions 
+     */
     this.submitVanilla = function(positions){
         this.historian.submitVanilla(positions);
     }
 
+    /**
+     * Clear the history
+     * Calls ``HistoryManager.historian.forget()``
+     */
     this.forget = function(){
-        return this.historian.forget();
+        this.historian.forget();
     }
 
+    /**
+     * returns keys set of historian
+     * @returns {string[]} keys
+     */
     this.getKeys = function(){
         return this.historian.getKeys();
     }
 
+
+    /**
+     * returns memory of historian
+     * @returns {Object} memory
+     */
     this.getMemo = function(){
         return this.historian.getMemo();
     }
@@ -74,11 +125,32 @@ function HistoryManager(historian){
 }
 "use strict";
 
+/**
+ * The part of the system that holds history
+ * @returns {Object} Historian object
+ */
 function Historian(){
+    /**
+     * Memory object that maps keys to memories.
+     */
     this.memo = {};
+
+    /**
+     * Array of submited Keys.
+     */
     this.keys = [];
+
+    /**
+     * Value of current key.
+     */
     this.key = "-1";
 
+    /**
+     * Submit passed vertices for passed key
+     * 
+     * @param {number[]} positions array of vertices
+     * @param {string} key key
+     */
     this.submit = function(positions, key){
         if(! (key in this.memo)){
             this.keys.push(key);
@@ -88,23 +160,42 @@ function Historian(){
         this.memo[key] = this.memo[key].concat(positions);
     }
 
+    /**
+     * Submit passed vertices for current key ( ``Historian.key`` )
+     * @param {number[]} positions array of vertices
+     */
     this.submitVanilla = function(positions){
         this.submit(positions, this.key);
     }
 
+    /**
+     * Set key to current key ( ``Historian.key`` )
+     * @param {string} key 
+     */
     this.setKey = function(key){
         this.key = key;
     }
 
+    /**
+     * Clear the history
+     */
     this.forget = function(){
         this.memo = {};
         this.key = [];
     }
 
+    /**
+     * returns ``Historian.memo``
+     * @returns {Object} memory
+     */
     this.getMemo = function(){
         return this.memo;
     }
 
+    /**
+     * returns ``Historian.keys``
+     * @returns {string[]} keys
+     */
     this.getKeys = function(){
         return this.keys;
     }
@@ -121,6 +212,7 @@ function Historian(){
  * @param {function} getTexturePinPoint function that returns texture pin point
  * @param {function} zoominCallback function that calls when wants to zoom in to (x, y)
  * @param {function} zoomoutCallback function that calls when wants to zoom out to (x, y)
+ * @returns {Object} Cartographer object
  */
 function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}){
     var selector = $('#' + id);
@@ -187,6 +279,7 @@ function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [
  * 
  * @param {string} id id of canvas element
  * @param {function} webglErrorFunction callback function for when user cannot use webgl
+ * @returns {Object} Drawer object
  */
 function Drawer(id, webglErrorFunction){
 
@@ -765,13 +858,26 @@ function Drawer(id, webglErrorFunction){
 }
 "use strict";
 
+/**
+ * The part of the system that converts complex shapes to 
+ * triangles that can drawn by ‍‍``Drawer``
+ * 
+ * @returns {Object} PositionMaker object
+ */
 function PositionMaker(){
 
+    /**
+     * Reset all values
+     */
     this.reset = function(){
         this.positions = [];
     }
 
-
+    /**
+     * Get array of values and add represented polygon to ``PositionMaker.positions``.
+     * 
+     * @param {number[]} vertices sequence of ``X``s and ``Y``s of vertices of polygon. For example ``[0,0, 50,0, 50,50, 0,50]`` represents an square
+     */
     this.addPolygon = function(vertices){
         let indexes = earcut(vertices);
         for(let i = 0;i < indexes.length;i ++){
@@ -780,7 +886,15 @@ function PositionMaker(){
         }
     }
 
-
+    /**
+     * Add a line between ``P1`` and ``P2`` to ``PositionMaker.positions``.
+     * 
+     * @param {number} x1 X of P1
+     * @param {number} y1 Y of P1
+     * @param {number} x2 X of P2
+     * @param {number} y2 Y of P2
+     * @param {number} width width of line
+     */
     this.addLine = function(x1,y1,x2,y2,width){
         let a = x2-x1, b = y2-y1;
         let vectorLen = Math.sqrt(a*a + b*b);
@@ -796,6 +910,13 @@ function PositionMaker(){
         this.positions.push(tmp1[0],tmp1[1],tmp2[0],tmp2[1],tmp3[0],tmp3[1],tmp3[0],tmp3[1],tmp4[0],tmp4[1],tmp1[0],tmp1[1]);
     }
 
+    /**
+     * Add a circle that centered on ``P`` with radius of ``R`` to ``PositionMaker.positions``.
+     * @param {number} cx X of P
+     * @param {number} cy Y of P
+     * @param {number} r radius
+     * @param {integer} cuts number of triangles to draw circle
+     */
     this.addCircle = function(cx,cy,r,cuts=15){
         let x,y;
         let cut = (Math.PI*2)/cuts;
@@ -811,20 +932,29 @@ function PositionMaker(){
         }
     }
 
-
+    /**
+     * Add multiple lines to ``PositionMaker.positions``
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an L shape line
+     * @param {number} width line width
+     */
     this.addSequenceLine = function(positions, width){
         for(let i = 0;i < (positions.length/2) - 1;i ++){
             this.addLine(positions[2*i],positions[2*i+1], positions[2*i+2], positions[2*i+3], width);
         }
     }
 
-
+    /**
+     * Returns the array that contains the vertices of the triangles
+     * @returns {number[]} ``PositionMaker.positions``
+     */
     this.getPositionsList = function(){
         return this.positions;
     }
 
-
-    this.reset();
+    /**
+     * The array that contains the vertices of the triangles
+     */
+    this.positions = [];
 }
 /**
  * Get info object and set values.
@@ -835,6 +965,7 @@ function PositionMaker(){
  * @param {boolean} info.isCartographerEnable value is True when you want zoomin/out and translation with mouse
  * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
  * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+ * @returns {Object} CanvasDrawer object
  */
 function CanvasDrawer(info){
     /**
@@ -1023,7 +1154,7 @@ function CanvasDrawer(info){
     this.addLine = (x1,y1,x2,y2,width)=>this.positionMaker.addLine(x1,y1,x2,y2,width);
     
     /**
-     * Add a circle ``Positon Maker`` that centered on ``P`` with radius of ``R``.
+     * Add a circle that centered on ``P`` with radius of ``R``.
      * @param {number} cx X of P
      * @param {number} cy Y of P
      * @param {number} r radius
