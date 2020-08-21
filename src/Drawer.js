@@ -28,23 +28,29 @@ function Drawer(id, webglErrorFunction){
         uniform vec2 u_tex_resolution;
         uniform vec2 u_tex_translation;
 
-        uniform vec4 u_color_mask;
-        uniform vec4 u_texture_mask;
+        uniform int u_color_texture_flag;
+
+        vec4  useColor(){
+            return u_color;
+        }
+
+        vec4 useTexture(){
+            mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
+            vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
+            vec2 zeroToOne = position / u_tex_resolution;
+            vec2 zeroToTwo = zeroToOne * 2.0;
+            vec2 clipSpace = zeroToTwo - 1.0;
+            clipSpace = clipSpace * vec2(1, -1);
+            mediump vec4 sample = texture2D(tex, clipSpace);
+            return sample;
+        }
 
         void main() {
-            if(u_color_mask == vec4(0, 0, 0, 0)){
-                mediump vec2 coord = vec2(gl_FragCoord.x, gl_FragCoord.y);
-                vec2 position = vec2(coord.x - u_tex_translation.x, coord.y + u_tex_translation.y);
-                vec2 zeroToOne = position / u_tex_resolution;
-                vec2 zeroToTwo = zeroToOne * 2.0;
-                vec2 clipSpace = zeroToTwo - 1.0;
-                clipSpace = clipSpace * vec2(1, -1);
-
-                mediump vec4 sample = texture2D(tex, clipSpace);
-                gl_FragColor = sample;
+            if(u_color_texture_flag == 0){
+                gl_FragColor = useColor();
             }
             else{
-                gl_FragColor = u_color;
+                gl_FragColor = useTexture();
             }
         }
     `;
@@ -89,15 +95,17 @@ function Drawer(id, webglErrorFunction){
 
     this.setColorEnable = function(){
         this.historyManager.setColor(this.color[0], this.color[1], this.color[2], this.color[3])
-        this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
-        this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
+        this.gl.uniform1i(this.colorTextureFlag, 0);
+        // this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
+        // this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
     }
 
 
     this.setTextureEnable = function(){
         this.historyManager.setTextureSlut(this.activeTexture);
-        this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
-        this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
+        this.gl.uniform1i(this.colorTextureFlag, 1);
+        // this.gl.uniform4f(this.colorMaskLocation, 0, 0, 0, 0);
+        // this.gl.uniform4f(this.textureMaskLocation, 1, 1, 1, 1);
     }
 
 
@@ -339,16 +347,19 @@ function Drawer(id, webglErrorFunction){
         this.textureResolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_tex_resolution");
         this.textureTranslationLocation = this.gl.getUniformLocation(this.program, "u_tex_translation");
         
-        this.colorMaskLocation = this.gl.getUniformLocation(this.program, "u_color_mask");
-        this.textureMaskLocation = this.gl.getUniformLocation(this.program, "u_texture_mask");
+        // this.colorMaskLocation = this.gl.getUniformLocation(this.program, "u_color_mask");
+        // this.textureMaskLocation = this.gl.getUniformLocation(this.program, "u_texture_mask");
+        this.colorTextureFlag = this.gl.getUniformLocation(this.program, "u_color_texture_flag");
+
 
         this.clear(0,0,0,0);
         this.gl.uniform2fv(this.scaleLocation, this.scale);
         this.gl.uniform2fv(this.translationLocation, this.translation);
         this.gl.uniform2fv(this.textureTranslationLocation, this.texTranslation);
 
-        this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
-        this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
+        // this.gl.uniform4f(this.colorMaskLocation, 1, 1, 1, 1);
+        // this.gl.uniform4f(this.textureMaskLocation, 0, 0, 0, 0);
+        this.gl.uniform1i(this.colorTextureFlag, 0);
 
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
@@ -397,10 +408,10 @@ function Drawer(id, webglErrorFunction){
         else{
             this.setup();
         }
-        window.addEventListener("resize", function(){
-            this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
-            this.redraw();
-        });
+        // window.addEventListener("resize", function(){
+        //     cd.drawer.gl.uniform2f(cd.drawer.resolutionUniformLocation, cd.drawer.gl.canvas.width, cd.drawer.gl.canvas.height);
+        //     cd.drawer.redraw();
+        // });
     }
 
     // Main
