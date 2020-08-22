@@ -1,3 +1,5 @@
+# Cartographer
+
 <a name="Cartographer"></a>
 
 ## Cartographer(id, setReativeTranslation, getPinPoint, getTexturePinPoint, zoominCallback, zoomoutCallback) ⇒ <code>Object</code>
@@ -14,4 +16,10 @@ The section of program that provide user intractions with an element.Canvas Dra
 | getTexturePinPoint | <code>function</code> | function that returns texture pin point |
 | zoominCallback | <code>function</code> | function that calls when wants to zoom in to (x, y) |
 | zoomoutCallback | <code>function</code> | function that calls when wants to zoom out to (x, y) |
+
+**Example**  
+```js
+var cartographer = new Cartographer(     id,      setReativeTranslation,      getPinPoint,      getTexturePinPoint,      zoominAction,      zoomoutAction );
+```
+
 

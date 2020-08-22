@@ -1,3 +1,5 @@
+# CanvasDrawer
+
 ## Functions
 
 <dl>
@@ -15,8 +17,8 @@ color and reset the Position Maker.</p>
 <dt><a href="#justDraw">justDraw()</a></dt>
 <dd><p>Draw shapes that are added to the Position Maker and reset that.</p>
 </dd>
-<dt><a href="#loadTexture">loadTexture(image, slut)</a></dt>
-<dd><p>Call Drawer.setTexture(image, slut)</p>
+<dt><a href="#loadTexture">loadTexture(image, unit)</a></dt>
+<dd><p>Calls <code>Drawer.setTexture(image, unit)</code></p>
 </dd>
 <dt><a href="#imagesLoadTexture">imagesLoadTexture(images, callback)</a></dt>
 <dd><p>Get an array of loaded Image objects and load them to texture
@@ -62,6 +64,10 @@ Get info object and set values.
 | info.zoomInRate | <code>float</code> | zoomin rate default:1.1 (just if isCartographerEnable enabled) |
 | info.zoomOutRate | <code>float</code> | zoomout rate default:0.9 (just if isCartographerEnable enabled) |
 
+**Example**  
+```js
+var cd = new CanvasDrawer({   'id': 'myCanvas',   'errorFunction': ()=>alert("You can't load WebGL right now"),   'cartographer': true});
+```
 <a name="loadDataFromInfo"></a>
 
 ## loadDataFromInfo(name, defaultValue) ⇒ <code>\*</code>
@@ -97,15 +103,15 @@ Draw shapes that are added to the Position Maker and reset that.
 **Kind**: global function  
 <a name="loadTexture"></a>
 
-## loadTexture(image, slut)
-Call Drawer.setTexture(image, slut)
+## loadTexture(image, unit)
+Calls ``Drawer.setTexture(image, unit)``
 
 **Kind**: global function  
 
 | Param | Type |
 | --- | --- |
 | image | <code>Image</code> | 
-| slut | <code>\*</code> | 
+| unit | <code>number</code> | 
 
 <a name="imagesLoadTexture"></a>
 
@@ -198,4 +204,6 @@ Add multiple lines to ``Position Maker``
 | --- | --- | --- |
 | positions | <code>Array.&lt;number&gt;</code> | sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an L shape line |
 | width | <code>number</code> | line width |
+
+
 

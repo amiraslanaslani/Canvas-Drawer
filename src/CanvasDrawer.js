@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Get info object and set values.
  * 
@@ -8,6 +10,12 @@
  * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
  * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
  * @returns {Object} CanvasDrawer object
+ * @example
+ * var cd = new CanvasDrawer({
+ *    'id': 'myCanvas',
+ *    'errorFunction': ()=>alert("You can't load WebGL right now"),
+ *    'cartographer': true
+ * });
  */
 function CanvasDrawer(info){
     /**
@@ -46,10 +54,10 @@ function CanvasDrawer(info){
     }
 
     /**
-     * Call Drawer.setTexture(image, slut)
+     * Calls ``Drawer.setTexture(image, unit)``
      * 
      * @param {Image} image 
-     * @param {*} slut 
+     * @param {number} unit 
      */
     this.loadTexture = function(image, unit){
         this.drawer.setTexture(image, unit);
@@ -171,7 +179,6 @@ function CanvasDrawer(info){
         // Set Position Maker
         this.positionMaker = new PositionMaker();
     }
-
 
     // Main
     this.constructor(info);

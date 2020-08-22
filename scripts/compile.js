@@ -64,9 +64,15 @@ CONFIG.compile.forEach(compile => {
         // JSDoc
         name = path.basename(file).split(".")[0];
         let jsdocmd = jsdoc2md.renderSync({ files: file });
-        let mdFile = CONFIG.doc.jsdoc + name + ".md";
-        fs.writeFileSync(mdFile, jsdocmd, {flag: "w"}); 
-        fileLog(mdFile, "markdown file updated");
+        let mdFilePath = CONFIG.doc.jsdoc + name + ".md";
+        let mdTemplate = fs.readFileSync(CONFIG.doc.template, 'utf8');
+        var mdFileContent = mustache.render(mdTemplate, {
+            title: name,
+            document: jsdocmd
+        });
+
+        fs.writeFileSync(mdFilePath, mdFileContent, {flag: "w"}); 
+        fileLog(mdFilePath, "markdown file updated");
 
         // Join Files
         allFilesList.push(file)

@@ -11,6 +11,15 @@
  * @param {function} zoominCallback function that calls when wants to zoom in to (x, y)
  * @param {function} zoomoutCallback function that calls when wants to zoom out to (x, y)
  * @returns {Object} Cartographer object
+ * @example
+ *  var cartographer = new Cartographer(
+ *      id, 
+ *      setReativeTranslation, 
+ *      getPinPoint, 
+ *      getTexturePinPoint, 
+ *      zoominAction, 
+ *      zoomoutAction
+ *  );
  */
 function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}){
     var selector = $('#' + id);

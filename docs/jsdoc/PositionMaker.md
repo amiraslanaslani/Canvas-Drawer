@@ -1,3 +1,5 @@
+# PositionMaker
+
 ## Members
 
 <dl>
@@ -111,3 +113,5 @@ Returns the array that contains the vertices of the triangles
 
 **Kind**: global function  
 **Returns**: <code>Array.&lt;number&gt;</code> - ``PositionMaker.positions``  
+
+

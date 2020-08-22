@@ -1,3 +1,5 @@
+# HistoryManager
+
 ## Members
 
 <dl>
@@ -60,6 +62,10 @@ The part of the system that connects ``Drawer`` to ``Historian``.
 | --- | --- | --- |
 | historian | <code>Object</code> | Historian object |
 
+**Example**  
+```js
+var hm = new HistoryManager(     new Historian(););
+```
 <a name="setColor"></a>
 
 ## setColor(r, g, b, a)
@@ -146,3 +152,5 @@ returns memory of historian
 
 **Kind**: global function  
 **Returns**: <code>Object</code> - memory  
+
+

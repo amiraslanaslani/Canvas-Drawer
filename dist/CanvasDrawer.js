@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-22T08:09:16.193Z (Sat, 22 Aug 2020 08:09:16 GMT)
+ * Date: 2020-08-22T08:44:59.952Z (Sat, 22 Aug 2020 08:44:59 GMT)
  */
 
 "use strict";
@@ -16,6 +16,10 @@
  * 
  * @param {Object} historian Historian object
  * @returns {Object} HistoryManager object
+ * @example
+ * var hm = new HistoryManager(
+ *      new Historian();
+ * );
  */
 function HistoryManager(historian){
     /**
@@ -213,6 +217,15 @@ function Historian(){
  * @param {function} zoominCallback function that calls when wants to zoom in to (x, y)
  * @param {function} zoomoutCallback function that calls when wants to zoom out to (x, y)
  * @returns {Object} Cartographer object
+ * @example
+ *  var cartographer = new Cartographer(
+ *      id, 
+ *      setReativeTranslation, 
+ *      getPinPoint, 
+ *      getTexturePinPoint, 
+ *      zoominAction, 
+ *      zoomoutAction
+ *  );
  */
 function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}){
     var selector = $('#' + id);
@@ -956,7 +969,9 @@ function PositionMaker(){
      */
     this.positions = [];
 }
-/**
+"use strict";
+
+/**
  * Get info object and set values.
  * 
  * @param {Object} info 
@@ -966,6 +981,12 @@ function PositionMaker(){
  * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
  * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
  * @returns {Object} CanvasDrawer object
+ * @example
+ * var cd = new CanvasDrawer({
+ *    'id': 'myCanvas',
+ *    'errorFunction': ()=>alert("You can't load WebGL right now"),
+ *    'cartographer': true
+ * });
  */
 function CanvasDrawer(info){
     /**
@@ -1004,10 +1025,10 @@ function CanvasDrawer(info){
     }
 
     /**
-     * Call Drawer.setTexture(image, slut)
+     * Calls ``Drawer.setTexture(image, unit)``
      * 
      * @param {Image} image 
-     * @param {*} slut 
+     * @param {number} unit 
      */
     this.loadTexture = function(image, unit){
         this.drawer.setTexture(image, unit);
@@ -1129,7 +1150,6 @@ function CanvasDrawer(info){
         // Set Position Maker
         this.positionMaker = new PositionMaker();
     }
-
 
     // Main
     this.constructor(info);

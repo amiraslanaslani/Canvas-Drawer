@@ -16,7 +16,8 @@
         }
     ],
     "doc":{
-        "jsdoc": "docs/jsdoc/"
+        "jsdoc": "docs/jsdoc/",
+        "template": "scripts/compile/markdown.mustache"
     },
     "preview":{
         "template": "scripts/compile/preview.mustache",

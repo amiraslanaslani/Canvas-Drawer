@@ -5,6 +5,10 @@
  * 
  * @param {Object} historian Historian object
  * @returns {Object} HistoryManager object
+ * @example
+ * var hm = new HistoryManager(
+ *      new Historian();
+ * );
  */
 function HistoryManager(historian){
     /**
