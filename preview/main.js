@@ -11,14 +11,14 @@ var cd = new CanvasDrawer({
 
 // Test
 let textures = [
-    'images/a.jpg', 
+    'images/a.png', 
     'images/b.jpg'
 ];
 
 cd.loadTextures(textures, (data) => {
     cd.drawer.setTextureEnable();
     cd.drawer.setTextureResolution(512, 512);
-    cd.drawer.setUseTexture(data['images/a.jpg']);
+    cd.drawer.setUseTexture(data['images/a.png']);
     cd.addPolygon([0,0, 256,0, 256,256, 0,256]);
     cd.justDraw();
 
