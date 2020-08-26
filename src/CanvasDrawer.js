@@ -56,11 +56,13 @@ function CanvasDrawer(info){
     /**
      * Calls ``Drawer.setTexture(image, unit)``
      * 
-     * @param {Image} image 
-     * @param {number} unit 
+     * @param {Image} image texture
+     * @param {integer} unit texture unit
+     * @param {GLenum} internalFormat a GLenum specifying the color components in the texture
+     * @param {GLenum} format a GLenum specifying the format of the texel data
      */
-    this.loadTexture = function(image, unit){
-        this.drawer.setTexture(image, unit);
+    this.loadTexture = function(image, unit, internalFormat, format){
+        this.drawer.setTexture(image, unit, internalFormat, format);
     }
 
     /**

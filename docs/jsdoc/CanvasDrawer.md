@@ -17,7 +17,7 @@ color and reset the Position Maker.</p>
 <dt><a href="#justDraw">justDraw()</a></dt>
 <dd><p>Draw shapes that are added to the Position Maker and reset that.</p>
 </dd>
-<dt><a href="#loadTexture">loadTexture(image, unit)</a></dt>
+<dt><a href="#loadTexture">loadTexture(image, unit, internalFormat, format)</a></dt>
 <dd><p>Calls <code>Drawer.setTexture(image, unit)</code></p>
 </dd>
 <dt><a href="#imagesLoadTexture">imagesLoadTexture(images, callback)</a></dt>
@@ -103,15 +103,17 @@ Draw shapes that are added to the Position Maker and reset that.
 **Kind**: global function  
 <a name="loadTexture"></a>
 
-## loadTexture(image, unit)
+## loadTexture(image, unit, internalFormat, format)
 Calls ``Drawer.setTexture(image, unit)``
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| image | <code>Image</code> | 
-| unit | <code>number</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| image | <code>Image</code> | texture |
+| unit | <code>integer</code> | texture unit |
+| internalFormat | <code>GLenum</code> | a GLenum specifying the color components in the texture |
+| format | <code>GLenum</code> | a GLenum specifying the format of the texel data |
 
 <a name="imagesLoadTexture"></a>
 

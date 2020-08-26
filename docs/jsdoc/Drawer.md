@@ -22,7 +22,7 @@
 <dt><a href="#setActiveTextureUnit">setActiveTextureUnit(value)</a> ⇒ <code>boolean</code></dt>
 <dd><p>Get a texture unit and activate it</p>
 </dd>
-<dt><a href="#setTexture">setTexture(image, unit)</a></dt>
+<dt><a href="#setTexture">setTexture(image, unit, internalFormat, format)</a></dt>
 <dd><p>Set image to specific texture unit</p>
 </dd>
 <dt><a href="#setUseTexture">setUseTexture(unit)</a></dt>
@@ -174,15 +174,17 @@ Get a texture unit and activate it
 
 <a name="setTexture"></a>
 
-## setTexture(image, unit)
+## setTexture(image, unit, internalFormat, format)
 Set image to specific texture unit
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| image | <code>Image</code> | 
-| unit | <code>integer</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| image | <code>Image</code> | texture |
+| unit | <code>integer</code> | texture unit |
+| internalFormat | <code>GLenum</code> | a GLenum specifying the color components in the texture |
+| format | <code>GLenum</code> | a GLenum specifying the format of the texel data |
 
 <a name="setUseTexture"></a>
 
@@ -191,9 +193,9 @@ Set fragment shader to read texture from specific texture unit.
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| unit | <code>integer</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| unit | <code>integer</code> | texture unit |
 
 <a name="setColorEnable"></a>
 

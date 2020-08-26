@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-22T08:44:59.952Z (Sat, 22 Aug 2020 08:44:59 GMT)
+ * Date: 2020-08-26T09:24:13.411Z (Wed, 26 Aug 2020 09:24:13 GMT)
  */
 
 "use strict";
@@ -378,21 +378,25 @@ function Drawer(id, webglErrorFunction){
 
     /**
      * Set image to specific texture unit
-     * @param {Image} image 
-     * @param {integer} unit 
+     * 
+     * @param {Image} image texture
+     * @param {integer} unit texture unit
+     * @param {GLenum} internalFormat a GLenum specifying the color components in the texture
+     * @param {GLenum} format a GLenum specifying the format of the texel data
      */
-    this.setTexture = function(image, unit){
+    this.setTexture = function(image, unit, internalFormat=this.gl.RGBA, format=this.gl.RGBA){
         this.setActiveTextureUnit(unit);
         let tex = this.gl.createTexture();
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGB, this.gl.RGB, this.gl.UNSIGNED_BYTE, image);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, internalFormat, format, this.gl.UNSIGNED_BYTE, image);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
         console.log("Texture is loaded to TEXTURE" + unit);
     }
 
     /**
      * Set fragment shader to read texture from specific texture unit.
-     * @param {integer} unit 
+     * 
+     * @param {integer} unit texture unit
      */
     this.setUseTexture = function(unit){
         this.activeTexture = unit;
@@ -445,6 +449,7 @@ function Drawer(id, webglErrorFunction){
     
     /**
      * Submit vertices to the Array Buffer and submited in the history 
+     * 
      * @param {*} positions 
      */
     this.setPositions = function(positions){
@@ -454,6 +459,7 @@ function Drawer(id, webglErrorFunction){
 
     /**
      * Submit vertices to the Array Buffer
+     * 
      * @param {number[]} positions array of vertices ``[x1, y1, x2, y2, ...]``
      */
     this.setPositionsVanilla = function(positions){
@@ -1027,11 +1033,13 @@ function CanvasDrawer(info){
     /**
      * Calls ``Drawer.setTexture(image, unit)``
      * 
-     * @param {Image} image 
-     * @param {number} unit 
+     * @param {Image} image texture
+     * @param {integer} unit texture unit
+     * @param {GLenum} internalFormat a GLenum specifying the color components in the texture
+     * @param {GLenum} format a GLenum specifying the format of the texel data
      */
-    this.loadTexture = function(image, unit){
-        this.drawer.setTexture(image, unit);
+    this.loadTexture = function(image, unit, internalFormat, format){
+        this.drawer.setTexture(image, unit, internalFormat, format);
     }
 
     /**
