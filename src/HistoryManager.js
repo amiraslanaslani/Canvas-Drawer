@@ -32,7 +32,7 @@ function HistoryManager(historian){
      * @param {integer} b blue color in range 0-1
      * @param {integer} a alpha color in range 0-1
      */
-    this.setColor = function(r, g, b, a){
+    this.setColor = function(r, g, b, a=1){
         let key = "" + r + " " + g + " " + b + " " + a;
         this.historian.setKey(key);
     }

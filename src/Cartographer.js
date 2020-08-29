@@ -60,18 +60,24 @@ function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [
 
     selector.on("wheel mousewheel", function(e){
         e.preventDefault();
-        let borderPosition = selector.position();
+        let borderPosition = selector.offset();
+
+        let pos = [
+            e.pageX - borderPosition['left'],
+            e.pageY - borderPosition['top']
+        ];
+
         if(e.originalEvent.deltaY > 0) {
             zoomoutCallback(
-                e.pageX - borderPosition['left'],
-                e.pageY - borderPosition['top']
+                pos[0],
+                pos[1]
             );
             return;
         } 
         if(e.originalEvent.deltaY < 0) {
             zoominCallback(
-                e.pageX - borderPosition['left'],
-                e.pageY - borderPosition['top']
+                pos[0],
+                pos[1]
             );
             return;
         }   

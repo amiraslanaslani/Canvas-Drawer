@@ -142,7 +142,7 @@ function Drawer(id, webglErrorFunction){
      * @param {integer} b blue color in range 0-1
      * @param {integer} a alpha color in range 0-1
      */
-    this.setColor = function(r, g, b, a){
+    this.setColor = function(r, g, b, a=1){
         this.setColorVanilla(r,g,b,a);
         this.historyManager.setColor(r,g,b,a);
     }

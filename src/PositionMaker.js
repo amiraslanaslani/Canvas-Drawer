@@ -68,7 +68,7 @@ function PositionMaker(){
         for(let i = 0;i <= Math.PI * 2;i += cut){
             x = cx + r * Math.cos(i);
             y = cy + r * Math.sin(i);
-            this.positions.push(cx,cy,ox,oy,x,y)
+            this.positions.push(cx,cy,ox,oy,x,y);
             ox = x;
             oy = y;
         }

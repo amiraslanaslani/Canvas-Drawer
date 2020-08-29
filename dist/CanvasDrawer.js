@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-26T09:24:13.411Z (Wed, 26 Aug 2020 09:24:13 GMT)
+ * Date: 2020-08-29T09:12:45.956Z (Sat, 29 Aug 2020 09:12:45 GMT)
  */
 
 "use strict";
@@ -43,7 +43,7 @@ function HistoryManager(historian){
      * @param {integer} b blue color in range 0-1
      * @param {integer} a alpha color in range 0-1
      */
-    this.setColor = function(r, g, b, a){
+    this.setColor = function(r, g, b, a=1){
         let key = "" + r + " " + g + " " + b + " " + a;
         this.historian.setKey(key);
     }
@@ -266,18 +266,24 @@ function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [
 
     selector.on("wheel mousewheel", function(e){
         e.preventDefault();
-        let borderPosition = selector.position();
+        let borderPosition = selector.offset();
+
+        let pos = [
+            e.pageX - borderPosition['left'],
+            e.pageY - borderPosition['top']
+        ];
+
         if(e.originalEvent.deltaY > 0) {
             zoomoutCallback(
-                e.pageX - borderPosition['left'],
-                e.pageY - borderPosition['top']
+                pos[0],
+                pos[1]
             );
             return;
         } 
         if(e.originalEvent.deltaY < 0) {
             zoominCallback(
-                e.pageX - borderPosition['left'],
-                e.pageY - borderPosition['top']
+                pos[0],
+                pos[1]
             );
             return;
         }   
@@ -429,7 +435,7 @@ function Drawer(id, webglErrorFunction){
      * @param {integer} b blue color in range 0-1
      * @param {integer} a alpha color in range 0-1
      */
-    this.setColor = function(r, g, b, a){
+    this.setColor = function(r, g, b, a=1){
         this.setColorVanilla(r,g,b,a);
         this.historyManager.setColor(r,g,b,a);
     }
@@ -945,7 +951,7 @@ function PositionMaker(){
         for(let i = 0;i <= Math.PI * 2;i += cut){
             x = cx + r * Math.cos(i);
             y = cy + r * Math.sin(i);
-            this.positions.push(cx,cy,ox,oy,x,y)
+            this.positions.push(cx,cy,ox,oy,x,y);
             ox = x;
             oy = y;
         }
