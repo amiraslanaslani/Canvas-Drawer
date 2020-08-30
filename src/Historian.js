@@ -5,6 +5,13 @@
  * @returns {Object} Historian object
  */
 function Historian(){
+    this.clone = function(){
+        let newOne = new Historian();
+        newOne.keys = JSON.parse(JSON.stringify(this.keys));
+        newOne.memo = JSON.parse(JSON.stringify(this.memo));
+        return newOne;
+    }
+
     /**
      * Memory object that maps keys to memories.
      */
@@ -32,7 +39,7 @@ function Historian(){
             this.memo[key] = [];
         }
         
-        this.memo[key] = this.memo[key].concat(positions);
+        Array.prototype.push.apply(this.memo[key], positions);
     }
 
     /**

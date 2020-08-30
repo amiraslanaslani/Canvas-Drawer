@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-29T09:12:45.956Z (Sat, 29 Aug 2020 09:12:45 GMT)
+ * Date: 2020-08-30T10:40:57.344Z (Sun, 30 Aug 2020 10:40:57 GMT)
  */
 
 "use strict";
@@ -134,6 +134,13 @@ function HistoryManager(historian){
  * @returns {Object} Historian object
  */
 function Historian(){
+    this.clone = function(){
+        let newOne = new Historian();
+        newOne.keys = JSON.parse(JSON.stringify(this.keys));
+        newOne.memo = JSON.parse(JSON.stringify(this.memo));
+        return newOne;
+    }
+
     /**
      * Memory object that maps keys to memories.
      */
@@ -161,7 +168,7 @@ function Historian(){
             this.memo[key] = [];
         }
         
-        this.memo[key] = this.memo[key].concat(positions);
+        Array.prototype.push.apply(this.memo[key], positions);
     }
 
     /**
@@ -906,8 +913,7 @@ function PositionMaker(){
     this.addPolygon = function(vertices){
         let indexes = earcut(vertices);
         for(let i = 0;i < indexes.length;i ++){
-            this.positions.push(vertices[indexes[i]*2]);
-            this.positions.push(vertices[indexes[i]*2 + 1]);
+            this.positions.push(vertices[indexes[i]*2], vertices[indexes[i]*2 + 1]);
         }
     }
 

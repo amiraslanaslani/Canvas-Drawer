@@ -23,8 +23,7 @@ function PositionMaker(){
     this.addPolygon = function(vertices){
         let indexes = earcut(vertices);
         for(let i = 0;i < indexes.length;i ++){
-            this.positions.push(vertices[indexes[i]*2]);
-            this.positions.push(vertices[indexes[i]*2 + 1]);
+            this.positions.push(vertices[indexes[i]*2], vertices[indexes[i]*2 + 1]);
         }
     }
 
