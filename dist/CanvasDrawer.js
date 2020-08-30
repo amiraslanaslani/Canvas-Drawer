@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-30T10:40:57.344Z (Sun, 30 Aug 2020 10:40:57 GMT)
+ * Date: 2020-08-30T20:40:26.444Z (Sun, 30 Aug 2020 20:40:26 GMT)
  */
 
 "use strict";
@@ -134,8 +134,24 @@ function HistoryManager(historian){
  * @returns {Object} Historian object
  */
 function Historian(){
+
+    /**
+     * Get clone of this Historian object
+     * @returns {Object} cloned historian object
+     */
     this.clone = function(){
         let newOne = new Historian();
+        newOne.keys = JSON.parse(JSON.stringify(this.keys));
+        newOne.memo = JSON.parse(JSON.stringify(this.memo));
+        return newOne;
+    }
+
+    /**
+     * Get clone of all data saved in this historian
+     * @returns {Object} clone of all data saved in this historian
+     */
+    this.getDataCopy = function(){
+        let newOne = {};
         newOne.keys = JSON.parse(JSON.stringify(this.keys));
         newOne.memo = JSON.parse(JSON.stringify(this.memo));
         return newOne;

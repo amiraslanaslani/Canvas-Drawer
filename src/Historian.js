@@ -5,8 +5,24 @@
  * @returns {Object} Historian object
  */
 function Historian(){
+
+    /**
+     * Get clone of this Historian object
+     * @returns {Object} cloned historian object
+     */
     this.clone = function(){
         let newOne = new Historian();
+        newOne.keys = JSON.parse(JSON.stringify(this.keys));
+        newOne.memo = JSON.parse(JSON.stringify(this.memo));
+        return newOne;
+    }
+
+    /**
+     * Get clone of all data saved in this historian
+     * @returns {Object} clone of all data saved in this historian
+     */
+    this.getDataCopy = function(){
+        let newOne = {};
         newOne.keys = JSON.parse(JSON.stringify(this.keys));
         newOne.memo = JSON.parse(JSON.stringify(this.memo));
         return newOne;

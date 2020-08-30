@@ -20,6 +20,12 @@
 <dt><a href="#Historian">Historian()</a> ⇒ <code>Object</code></dt>
 <dd><p>The part of the system that holds history</p>
 </dd>
+<dt><a href="#clone">clone()</a> ⇒ <code>Object</code></dt>
+<dd><p>Get clone of this Historian object</p>
+</dd>
+<dt><a href="#getDataCopy">getDataCopy()</a> ⇒ <code>Object</code></dt>
+<dd><p>Get clone of all data saved in this historian</p>
+</dd>
 <dt><a href="#submit">submit(positions, key)</a></dt>
 <dd><p>Submit passed vertices for passed key</p>
 </dd>
@@ -65,6 +71,20 @@ The part of the system that holds history
 
 **Kind**: global function  
 **Returns**: <code>Object</code> - Historian object  
+<a name="clone"></a>
+
+## clone() ⇒ <code>Object</code>
+Get clone of this Historian object
+
+**Kind**: global function  
+**Returns**: <code>Object</code> - cloned historian object  
+<a name="getDataCopy"></a>
+
+## getDataCopy() ⇒ <code>Object</code>
+Get clone of all data saved in this historian
+
+**Kind**: global function  
+**Returns**: <code>Object</code> - clone of all data saved in this historian  
 <a name="submit"></a>
 
 ## submit(positions, key)
