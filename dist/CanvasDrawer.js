@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-30T20:40:26.444Z (Sun, 30 Aug 2020 20:40:26 GMT)
+ * Date: 2020-08-31T18:24:58.080Z (Mon, 31 Aug 2020 18:24:58 GMT)
  */
 
 "use strict";
@@ -816,6 +816,25 @@ function Drawer(id, webglErrorFunction){
         console.log(this.gl.getProgramInfoLog(program));
         this.gl.deleteProgram(program);
     };
+
+    /**
+     * Enable blending pixels
+     * @param {GLenum} sfactor a ``GLenum`` specifying a multiplier for the source blending factors
+     * @param {GLenum} dfactor a ``GLenum`` specifying a multiplier for the destination blending factors
+     * @param {GLenum} equationA a ``GLenum`` specifying how source and destination colors are combined
+     */
+    this.enableBlending = function(sfactor = this.gl.SRC_ALPHA, dfactor = this.gl.ONE_MINUS_SRC_ALPHA, equation = this.gl.FUNC_ADD){
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendEquation(equation);
+        this.gl.blendFunc(sfactor, dfactor);
+    }
+
+    /**
+     * Disable blending pixels
+     */
+    this.disableTextureBlending = function(){
+        this.gl.disable(this.gl.BLEND);
+    }
 
     /**
      * Initialize variables and uniforms

@@ -502,6 +502,25 @@ function Drawer(id, webglErrorFunction){
     };
 
     /**
+     * Enable blending pixels
+     * @param {GLenum} sfactor a ``GLenum`` specifying a multiplier for the source blending factors
+     * @param {GLenum} dfactor a ``GLenum`` specifying a multiplier for the destination blending factors
+     * @param {GLenum} equationA a ``GLenum`` specifying how source and destination colors are combined
+     */
+    this.enableBlending = function(sfactor = this.gl.SRC_ALPHA, dfactor = this.gl.ONE_MINUS_SRC_ALPHA, equation = this.gl.FUNC_ADD){
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendEquation(equation);
+        this.gl.blendFunc(sfactor, dfactor);
+    }
+
+    /**
+     * Disable blending pixels
+     */
+    this.disableTextureBlending = function(){
+        this.gl.disable(this.gl.BLEND);
+    }
+
+    /**
      * Initialize variables and uniforms
      */
     this.setup = function(){

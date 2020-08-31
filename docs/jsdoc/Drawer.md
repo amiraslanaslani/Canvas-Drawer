@@ -122,6 +122,12 @@ Calls <code>Drawer.setTextureTranslationVanilla(tx, ty)</code></p>
 <dt><a href="#createProgram">createProgram(vertexShader, fragmentShader)</a> ⇒ <code>WebGLProgram</code></dt>
 <dd><p>Create WebGL program object from given data.</p>
 </dd>
+<dt><a href="#enableBlending">enableBlending(sfactor, dfactor, equationA)</a></dt>
+<dd><p>Enable blending pixels</p>
+</dd>
+<dt><a href="#disableTextureBlending">disableTextureBlending()</a></dt>
+<dd><p>Disable blending pixels</p>
+</dd>
 <dt><a href="#setup">setup()</a></dt>
 <dd><p>Initialize variables and uniforms</p>
 </dd>
@@ -525,6 +531,25 @@ Create WebGL program object from given data.
 | vertexShader | <code>WebGLShader</code> | vertex shader |
 | fragmentShader | <code>WebGLShader</code> | fragment shader |
 
+<a name="enableBlending"></a>
+
+## enableBlending(sfactor, dfactor, equationA)
+Enable blending pixels
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| sfactor | <code>GLenum</code> | a ``GLenum`` specifying a multiplier for the source blending factors |
+| dfactor | <code>GLenum</code> | a ``GLenum`` specifying a multiplier for the destination blending factors |
+| equationA | <code>GLenum</code> | a ``GLenum`` specifying how source and destination colors are combined |
+
+<a name="disableTextureBlending"></a>
+
+## disableTextureBlending()
+Disable blending pixels
+
+**Kind**: global function  
 <a name="setup"></a>
 
 ## setup()
