@@ -521,6 +521,18 @@ function Drawer(id, webglErrorFunction){
     }
 
     /**
+     * Refit WebGL's clip space to new size of the canvas 
+     */
+    this.refitWebglToCanvas = function(){
+        let newW = this.gl.canvas.width,
+            newH = this.gl.canvas.height;
+
+        this.gl.viewport(0, 0, newW, newH);
+        this.gl.uniform2f(this.resolutionUniformLocation, newW, newH);
+        this.redraw();
+    }
+
+    /**
      * Initialize variables and uniforms
      */
     this.setup = function(){
@@ -553,7 +565,6 @@ function Drawer(id, webglErrorFunction){
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
         this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
         var size = 2;               // 2 components per iteration
         var type = this.gl.FLOAT;   // the data is 32bit floats
@@ -564,10 +575,11 @@ function Drawer(id, webglErrorFunction){
             this.positionAttributeLocation, size, type, normalize, stride, offset
         );
 
-        this.gl.uniform2f(this.resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.uniform2f(this.textureResolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.texResolution = [this.gl.canvas.width, this.gl.canvas.height];
         this.baseTextureTranslation = [0, - (this.gl.canvas.height % (this.texResolution[1] * this.texScale[1]))];
+
+        this.refitWebglToCanvas();
     };
 
 

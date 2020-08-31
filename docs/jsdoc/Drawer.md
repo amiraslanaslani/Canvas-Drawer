@@ -128,6 +128,9 @@ Calls <code>Drawer.setTextureTranslationVanilla(tx, ty)</code></p>
 <dt><a href="#disableTextureBlending">disableTextureBlending()</a></dt>
 <dd><p>Disable blending pixels</p>
 </dd>
+<dt><a href="#refitWebglToCanvas">refitWebglToCanvas()</a></dt>
+<dd><p>Refit WebGL&#39;s clip space to new size of the canvas</p>
+</dd>
 <dt><a href="#setup">setup()</a></dt>
 <dd><p>Initialize variables and uniforms</p>
 </dd>
@@ -548,6 +551,12 @@ Enable blending pixels
 
 ## disableTextureBlending()
 Disable blending pixels
+
+**Kind**: global function  
+<a name="refitWebglToCanvas"></a>
+
+## refitWebglToCanvas()
+Refit WebGL's clip space to new size of the canvas
 
 **Kind**: global function  
 <a name="setup"></a>
