@@ -21,7 +21,7 @@
  *      zoomoutAction
  *  );
  */
-function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}){
+function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [0,0]}, getTexturePinPoint=function(){return [0,0]}, zoominCallback=function(x, y){}, zoomoutCallback=function(x, y){}, preventTime=10){
     var selector = $('#' + id);
     var clicked = false, clickY, clickX, scrollTopTmp, scrollLeftTmp;
     selector.css('cursor', 'grab');
@@ -58,14 +58,25 @@ function Cartographer(id,setRelativeTranslation, getPinPoint=function(){return [
         }
     });
 
+    var wheelOnWork = false;
     selector.on("wheel mousewheel", function(e){
         e.preventDefault();
+        if(wheelOnWork){
+            return;
+        }
+
+        wheelOnWork = true;
+
         let borderPosition = selector.offset();
 
         let pos = [
             e.pageX - borderPosition['left'],
             e.pageY - borderPosition['top']
         ];
+
+        setTimeout(()=>{
+            wheelOnWork = false;
+        }, preventTime);
 
         if(e.originalEvent.deltaY > 0) {
             zoomoutCallback(

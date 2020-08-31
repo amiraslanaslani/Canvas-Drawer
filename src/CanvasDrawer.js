@@ -126,10 +126,11 @@ function CanvasDrawer(info){
      * 
      * @param {Object} info 
      * @param {string} info.id id of canvas element
-     * @param {function} info.errorFunction callback function for when user cannot use webgl
-     * @param {boolean} info.isCartographerEnable value is True when you want zoomin/out and translation with mouse
-     * @param {float} info.zoomInRate zoomin rate default:1.1 (just if isCartographerEnable enabled)
-     * @param {float} info.zoomOutRate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+     * @param {function} info.error callback function for when user cannot use webgl
+     * @param {boolean} info.cartographer value is True when you want zoomin/out and translation with mouse
+     * @param {float} info.zoominrate zoomin rate default:1.1 (just if isCartographerEnable enabled)
+     * @param {float} info.zoomoutrate zoomout rate default:0.9 (just if isCartographerEnable enabled)
+     * @param {float} info.zoompreventtime zoomout rate default:0.9 (just if isCartographerEnable enabled)
      */
     this.constructor = function(info){
         this.info = info;
@@ -139,6 +140,7 @@ function CanvasDrawer(info){
         var isCartographerEnable = this.loadDataFromInfo('cartographer', false);
         var zoomInRate = this.loadDataFromInfo('zoominrate', 1.1);
         var zoomOutRate = this.loadDataFromInfo('zoomoutrate', 0.9);
+        var zoomPreventTime = this.loadDataFromInfo('zoompreventtime', 10);
 
         if(id === false){
             console.log("CanvasDrawer can not found element with id that you pass or maybe you don't pass any id!");
@@ -175,7 +177,15 @@ function CanvasDrawer(info){
                 drawer.updateScaleIntoPoint(scale * zoomOutRate,x,y);
             }
 
-            this.cartographer = new Cartographer(id, setReativeTranslation, getPinPoint, getTexturePinPoint, zoominAction, zoomoutAction);
+            this.cartographer = new Cartographer(
+                id, 
+                setReativeTranslation, 
+                getPinPoint, 
+                getTexturePinPoint, 
+                zoominAction, 
+                zoomoutAction,
+                zoomPreventTime
+            );
         }
 
         // Set Position Maker

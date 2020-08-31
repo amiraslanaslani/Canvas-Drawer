@@ -150,10 +150,11 @@ Constructor function. Get info object and set values.
 | --- | --- | --- |
 | info | <code>Object</code> |  |
 | info.id | <code>string</code> | id of canvas element |
-| info.errorFunction | <code>function</code> | callback function for when user cannot use webgl |
-| info.isCartographerEnable | <code>boolean</code> | value is True when you want zoomin/out and translation with mouse |
-| info.zoomInRate | <code>float</code> | zoomin rate default:1.1 (just if isCartographerEnable enabled) |
-| info.zoomOutRate | <code>float</code> | zoomout rate default:0.9 (just if isCartographerEnable enabled) |
+| info.error | <code>function</code> | callback function for when user cannot use webgl |
+| info.cartographer | <code>boolean</code> | value is True when you want zoomin/out and translation with mouse |
+| info.zoominrate | <code>float</code> | zoomin rate default:1.1 (just if isCartographerEnable enabled) |
+| info.zoomoutrate | <code>float</code> | zoomout rate default:0.9 (just if isCartographerEnable enabled) |
+| info.zoompreventtime | <code>float</code> | zoomout rate default:0.9 (just if isCartographerEnable enabled) |
 
 <a name="addPolygon"></a>
 
