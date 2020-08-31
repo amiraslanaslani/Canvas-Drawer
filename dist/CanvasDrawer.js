@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-31T18:24:58.080Z (Mon, 31 Aug 2020 18:24:58 GMT)
+ * Date: 2020-08-31T18:57:22.758Z (Mon, 31 Aug 2020 18:57:22 GMT)
  */
 
 "use strict";
@@ -953,12 +953,12 @@ function PositionMaker(){
     }
 
     /**
-     * Add a line between ``P1`` and ``P2`` to ``PositionMaker.positions``.
+     * Add a line between P<sub>1</sub> and P<sub>2</sub> to ``PositionMaker.positions``.
      * 
-     * @param {number} x1 X of P1
-     * @param {number} y1 Y of P1
-     * @param {number} x2 X of P2
-     * @param {number} y2 Y of P2
+     * @param {number} x1 X of P<sub>1</sub>
+     * @param {number} y1 Y of P<sub>1</sub>
+     * @param {number} x2 X of P<sub>2</sub>
+     * @param {number} y2 Y of P<sub>2</sub>
      * @param {number} width width of line
      */
     this.addLine = function(x1,y1,x2,y2,width){
@@ -978,6 +978,7 @@ function PositionMaker(){
 
     /**
      * Add a circle that centered on ``P`` with radius of ``R`` to ``PositionMaker.positions``.
+     * 
      * @param {number} cx X of P
      * @param {number} cy Y of P
      * @param {number} r radius
@@ -996,6 +997,22 @@ function PositionMaker(){
             ox = x;
             oy = y;
         }
+    }
+
+    /**
+     * Add a rectangle P<sub>1</sub>P<sub>2</sub>P<sub>3</sub>P<sub>4</sub> to ``PositionMaker.positions``.
+     * @param {number} x1 X of P<sub>1</sub>
+     * @param {number} y1 Y of P<sub>1</sub>
+     * @param {number} x2 X of P<sub>3</sub>
+     * @param {number} y2 Y of P<sub>3</sub>
+     */
+    this.addRectangle = function(x1, y1, x2, y2){
+        this.positions.push(
+            x1, y1,
+            x1, y2,
+            x2, y2,
+            x2, y1
+        );
     }
 
     /**

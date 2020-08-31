@@ -22,10 +22,13 @@ triangles that can drawn by ‍‍<code>Drawer</code></p>
 <dd><p>Get array of values and add represented polygon to <code>PositionMaker.positions</code>.</p>
 </dd>
 <dt><a href="#addLine">addLine(x1, y1, x2, y2, width)</a></dt>
-<dd><p>Add a line between <code>P1</code> and <code>P2</code> to <code>PositionMaker.positions</code>.</p>
+<dd><p>Add a line between P<sub>1</sub> and P<sub>2</sub> to <code>PositionMaker.positions</code>.</p>
 </dd>
 <dt><a href="#addCircle">addCircle(cx, cy, r, cuts)</a></dt>
 <dd><p>Add a circle that centered on <code>P</code> with radius of <code>R</code> to <code>PositionMaker.positions</code>.</p>
+</dd>
+<dt><a href="#addRectangle">addRectangle(x1, y1, x2, y2)</a></dt>
+<dd><p>Add a rectangle P<sub>1</sub>P<sub>2</sub>P<sub>3</sub>P<sub>4</sub> to <code>PositionMaker.positions</code>.</p>
 </dd>
 <dt><a href="#addSequenceLine">addSequenceLine(positions, width)</a></dt>
 <dd><p>Add multiple lines to <code>PositionMaker.positions</code></p>
@@ -68,16 +71,16 @@ Get array of values and add represented polygon to ``PositionMaker.positions``.
 <a name="addLine"></a>
 
 ## addLine(x1, y1, x2, y2, width)
-Add a line between ``P1`` and ``P2`` to ``PositionMaker.positions``.
+Add a line between P<sub>1</sub> and P<sub>2</sub> to ``PositionMaker.positions``.
 
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| x1 | <code>number</code> | X of P1 |
-| y1 | <code>number</code> | Y of P1 |
-| x2 | <code>number</code> | X of P2 |
-| y2 | <code>number</code> | Y of P2 |
+| x1 | <code>number</code> | X of P<sub>1</sub> |
+| y1 | <code>number</code> | Y of P<sub>1</sub> |
+| x2 | <code>number</code> | X of P<sub>2</sub> |
+| y2 | <code>number</code> | Y of P<sub>2</sub> |
 | width | <code>number</code> | width of line |
 
 <a name="addCircle"></a>
@@ -93,6 +96,20 @@ Add a circle that centered on ``P`` with radius of ``R`` to ``PositionMaker.posi
 | cy | <code>number</code> | Y of P |
 | r | <code>number</code> | radius |
 | cuts | <code>integer</code> | number of triangles to draw circle |
+
+<a name="addRectangle"></a>
+
+## addRectangle(x1, y1, x2, y2)
+Add a rectangle P<sub>1</sub>P<sub>2</sub>P<sub>3</sub>P<sub>4</sub> to ``PositionMaker.positions``.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| x1 | <code>number</code> | X of P<sub>1</sub> |
+| y1 | <code>number</code> | Y of P<sub>1</sub> |
+| x2 | <code>number</code> | X of P<sub>3</sub> |
+| y2 | <code>number</code> | Y of P<sub>3</sub> |
 
 <a name="addSequenceLine"></a>
 
