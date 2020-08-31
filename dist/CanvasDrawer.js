@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-31T18:57:22.758Z (Mon, 31 Aug 2020 18:57:22 GMT)
+ * Date: 2020-08-31T19:10:23.250Z (Mon, 31 Aug 2020 19:10:23 GMT)
  */
 
 "use strict";
@@ -1010,8 +1010,10 @@ function PositionMaker(){
         this.positions.push(
             x1, y1,
             x1, y2,
-            x2, y2,
-            x2, y1
+            x2, y1,
+            x2, y1,
+            x1, y2,
+            x2, y2
         );
     }
 
