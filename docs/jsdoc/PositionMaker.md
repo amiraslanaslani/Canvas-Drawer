@@ -33,6 +33,9 @@ triangles that can drawn by ‍‍<code>Drawer</code></p>
 <dt><a href="#addSequenceLine">addSequenceLine(positions, width)</a></dt>
 <dd><p>Add multiple lines to <code>PositionMaker.positions</code></p>
 </dd>
+<dt><a href="#addClosedSequenceLine">addClosedSequenceLine(positions, width)</a></dt>
+<dd><p>Add multiple lines to <code>PositionMaker.positions</code> and closed lines.</p>
+</dd>
 <dt><a href="#getPositionsList">getPositionsList()</a> ⇒ <code>Array.&lt;number&gt;</code></dt>
 <dd><p>Returns the array that contains the vertices of the triangles</p>
 </dd>
@@ -121,6 +124,18 @@ Add multiple lines to ``PositionMaker.positions``
 | Param | Type | Description |
 | --- | --- | --- |
 | positions | <code>Array.&lt;number&gt;</code> | sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an L shape line |
+| width | <code>number</code> | line width |
+
+<a name="addClosedSequenceLine"></a>
+
+## addClosedSequenceLine(positions, width)
+Add multiple lines to ``PositionMaker.positions`` and closed lines.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| positions | <code>Array.&lt;number&gt;</code> | sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line |
 | width | <code>number</code> | line width |
 
 <a name="getPositionsList"></a>

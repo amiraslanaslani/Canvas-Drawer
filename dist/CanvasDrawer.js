@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-08-31T22:35:46.006Z (Mon, 31 Aug 2020 22:35:46 GMT)
+ * Date: 2020-09-02T08:34:46.697Z (Wed, 02 Sep 2020 08:34:46 GMT)
  */
 
 "use strict";
@@ -1052,6 +1052,23 @@ function PositionMaker(){
     }
 
     /**
+     * Add multiple lines to ``PositionMaker.positions`` and closed lines.
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line
+     * @param {number} width line width
+     */
+    this.addClosedSequenceLine = function(positions, width){
+        let positionsLen = positions.length;
+        this.addSequenceLine(positions, width);
+        this.addLine(
+            positions[0], 
+            positions[1], 
+            positions[positionsLen - 2], 
+            positions[positionsLen - 1], 
+            width
+        );
+    }
+
+    /**
      * Returns the array that contains the vertices of the triangles
      * @returns {number[]} ``PositionMaker.positions``
      */
@@ -1295,4 +1312,11 @@ function CanvasDrawer(info){
      * @param {number} width line width
      */
     this.addSequenceLine = (positions, width)=>this.positionMaker.addSequenceLine(positions, width);
+
+    /**
+     * Add multiple lines to ``Position Maker`` and closed lines.
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line
+     * @param {number} width line width
+     */
+    this.addClosedSequenceLine = (positions, width)=>this.positionMaker.addClosedSequenceLine(positions, width);
 }

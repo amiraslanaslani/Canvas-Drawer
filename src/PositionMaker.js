@@ -104,6 +104,23 @@ function PositionMaker(){
     }
 
     /**
+     * Add multiple lines to ``PositionMaker.positions`` and closed lines.
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line
+     * @param {number} width line width
+     */
+    this.addClosedSequenceLine = function(positions, width){
+        let positionsLen = positions.length;
+        this.addSequenceLine(positions, width);
+        this.addLine(
+            positions[0], 
+            positions[1], 
+            positions[positionsLen - 2], 
+            positions[positionsLen - 1], 
+            width
+        );
+    }
+
+    /**
      * Returns the array that contains the vertices of the triangles
      * @returns {number[]} ``PositionMaker.positions``
      */

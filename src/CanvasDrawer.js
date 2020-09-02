@@ -229,4 +229,11 @@ function CanvasDrawer(info){
      * @param {number} width line width
      */
     this.addSequenceLine = (positions, width)=>this.positionMaker.addSequenceLine(positions, width);
+
+    /**
+     * Add multiple lines to ``Position Maker`` and closed lines.
+     * @param {number[]} positions sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line
+     * @param {number} width line width
+     */
+    this.addClosedSequenceLine = (positions, width)=>this.positionMaker.addClosedSequenceLine(positions, width);
 }

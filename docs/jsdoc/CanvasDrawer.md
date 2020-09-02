@@ -45,6 +45,9 @@ then calls the callback function.</p>
 <dt><a href="#addSequenceLine">addSequenceLine(positions, width)</a></dt>
 <dd><p>Add multiple lines to <code>Position Maker</code></p>
 </dd>
+<dt><a href="#addClosedSequenceLine">addClosedSequenceLine(positions, width)</a></dt>
+<dd><p>Add multiple lines to <code>Position Maker</code> and closed lines.</p>
+</dd>
 </dl>
 
 <a name="CanvasDrawer"></a>
@@ -206,6 +209,18 @@ Add multiple lines to ``Position Maker``
 | Param | Type | Description |
 | --- | --- | --- |
 | positions | <code>Array.&lt;number&gt;</code> | sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an L shape line |
+| width | <code>number</code> | line width |
+
+<a name="addClosedSequenceLine"></a>
+
+## addClosedSequenceLine(positions, width)
+Add multiple lines to ``Position Maker`` and closed lines.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| positions | <code>Array.&lt;number&gt;</code> | sequence of vetices of line. For example ``[0,0, 100,0, 100,50]`` represents an triangle shaped line |
 | width | <code>number</code> | line width |
 
 
