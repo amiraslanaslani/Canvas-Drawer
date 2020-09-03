@@ -590,9 +590,9 @@ function Drawer(id, webglErrorFunction){
      * @param {function} webglErrorFunction callback function for when user cannot use webgl
      */
     this.constructor = function(id, webglErrorFunction){
-        this.historyManager = new HistoryManager(
+        this.historyManager = new HistoryManager([
             new Historian()
-        );
+        ]);
 
         this.activeTextureUnit = -1;
         this.color = [0,0,0,1];

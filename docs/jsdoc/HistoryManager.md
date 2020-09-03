@@ -3,8 +3,11 @@
 ## Members
 
 <dl>
-<dt><a href="#historian">historian</a></dt>
+<dt><a href="#historians">historians</a></dt>
 <dd><p>Historian object</p>
+</dd>
+<dt><a href="#activeHistorian">activeHistorian</a></dt>
+<dd><p>Index of active historian</p>
 </dd>
 </dl>
 
@@ -13,6 +16,15 @@
 <dl>
 <dt><a href="#HistoryManager">HistoryManager(historian)</a> ⇒ <code>Object</code></dt>
 <dd><p>The part of the system that connects <code>Drawer</code> to <code>Historian</code>.</p>
+</dd>
+<dt><a href="#getActiveHistorian">getActiveHistorian()</a></dt>
+<dd><p>Get active historian.</p>
+</dd>
+<dt><a href="#setActiveHistorian">setActiveHistorian(index)</a></dt>
+<dd><p>Set active historian.</p>
+</dd>
+<dt><a href="#getArrayOfHistorians">getArrayOfHistorians()</a> ⇒ <code>Array.&lt;Object&gt;</code></dt>
+<dd><p>Get array of historians.</p>
 </dd>
 <dt><a href="#setColor">setColor(r, g, b, a)</a></dt>
 <dd><p>Set current color to historian</p>
@@ -44,10 +56,16 @@ Calls <code>HistoryManager.historian.forget()</code></p>
 </dd>
 </dl>
 
-<a name="historian"></a>
+<a name="historians"></a>
 
-## historian
+## historians
 Historian object
+
+**Kind**: global variable  
+<a name="activeHistorian"></a>
+
+## activeHistorian
+Index of active historian
 
 **Kind**: global variable  
 <a name="HistoryManager"></a>
@@ -60,12 +78,36 @@ The part of the system that connects ``Drawer`` to ``Historian``.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| historian | <code>Object</code> | Historian object |
+| historian | <code>Array.&lt;Object&gt;</code> | array of Historian objects |
 
 **Example**  
 ```js
-var hm = new HistoryManager(     new Historian(););
+var hm = new HistoryManager([     new Historian()]);
 ```
+<a name="getActiveHistorian"></a>
+
+## getActiveHistorian()
+Get active historian.
+
+**Kind**: global function  
+<a name="setActiveHistorian"></a>
+
+## setActiveHistorian(index)
+Set active historian.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| index | <code>integer</code> | index of historian |
+
+<a name="getArrayOfHistorians"></a>
+
+## getArrayOfHistorians() ⇒ <code>Array.&lt;Object&gt;</code>
+Get array of historians.
+
+**Kind**: global function  
+**Returns**: <code>Array.&lt;Object&gt;</code> - array of historians  
 <a name="setColor"></a>
 
 ## setColor(r, g, b, a)

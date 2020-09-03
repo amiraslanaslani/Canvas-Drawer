@@ -3,18 +3,18 @@
 /**
  * The part of the system that connects ``Drawer`` to ``Historian``.
  * 
- * @param {Object} historian Historian object
+ * @param {Object[]} historian array of Historian objects
  * @returns {Object} HistoryManager object
  * @example
- * var hm = new HistoryManager(
- *      new Historian();
- * );
+ * var hm = new HistoryManager([
+ *      new Historian()
+ * ]);
  */
-function HistoryManager(historian){
+function HistoryManager(historians){
     /**
      * Historian object
      */
-    this.historian = historian;
+    this.historians = historians;
 
     // Color Attr.
     this.r = this.g = this.b = this.a = 1;
@@ -23,6 +23,38 @@ function HistoryManager(historian){
     this.t_slut = 0;
     this.t_resolution = [1, 1];
     this.t_translation = [0, 0];
+
+    /**
+     * Index of active historian 
+     */
+    this.activeHistorian = 0;
+
+    /**
+     * Get active historian.
+     */
+    this.getActiveHistorian = function(){
+        return this.historians[
+            this.activeHistorian
+        ];
+    }
+
+    /**
+     * Set active historian.
+     * 
+     * @param {integer} index index of historian
+     */
+    this.setActiveHistorian = function(index){
+        this.activeHistorian = index;
+    }
+
+    /**
+     * Get array of historians.
+     * 
+     * @returns {Object[]} array of historians
+     */
+    this.getArrayOfHistorians = function(){
+        return this.historians;
+    }
 
     /**
      * Set current color to historian
@@ -34,7 +66,7 @@ function HistoryManager(historian){
      */
     this.setColor = function(r, g, b, a=1){
         let key = "" + r + " " + g + " " + b + " " + a;
-        this.historian.setKey(key);
+        this.getActiveHistorian().setKey(key);
     }
 
     /**
@@ -47,7 +79,7 @@ function HistoryManager(historian){
                     ":" + this.t_translation[0] + // Translation X
                     ":" + this.t_translation[1]; // Translation Y
 
-        this.historian.setKey(key);
+        this.getActiveHistorian().setKey(key);
     }
 
     /**
@@ -85,7 +117,7 @@ function HistoryManager(historian){
      * @param {number[]} positions 
      */
     this.submitVanilla = function(positions){
-        this.historian.submitVanilla(positions);
+        this.getActiveHistorian().submitVanilla(positions);
     }
 
     /**
@@ -93,7 +125,9 @@ function HistoryManager(historian){
      * Calls ``HistoryManager.historian.forget()``
      */
     this.forget = function(){
-        this.historian.forget();
+        this.getArrayOfHistorians().map(
+            historian => historian.forget()
+        );
     }
 
     /**
@@ -101,7 +135,11 @@ function HistoryManager(historian){
      * @returns {string[]} keys
      */
     this.getKeys = function(){
-        return this.historian.getKeys();
+        let result = [];
+        for (const historian of this.getArrayOfHistorians()) {
+            Array.prototype.push.apply(result, historian.getKeys());
+        }
+        return result;
     }
 
 
@@ -110,9 +148,18 @@ function HistoryManager(historian){
      * @returns {Object} memory
      */
     this.getMemo = function(){
-        return this.historian.getMemo();
-    }
+        let result = {};
+        for (const historian of this.getArrayOfHistorians()) {
+            let memo = historian.getMemo();
 
-    // Constructor
-    this.historian = historian;
+            for (const color in memo) {
+                if(! (color in result))
+                    result[color] = [];
+
+                Array.prototype.push.apply(result[color], memo[color]);
+            }
+            
+        }
+        return result;
+    }
 }
