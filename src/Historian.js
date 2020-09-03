@@ -44,18 +44,30 @@ function Historian(){
     this.key = "-1";
 
     /**
+     * Add empty key.
+     * 
+     * @param {string} key key
+     */
+    this.addKey = function(key){
+        if(! (key in this.memo)){
+            this.keys.push(key);
+            this.memo[key] = [];
+        }
+    }
+
+    /**
      * Submit passed vertices for passed key
      * 
      * @param {number[]} positions array of vertices
      * @param {string} key key
      */
     this.submit = function(positions, key){
-        if(! (key in this.memo)){
-            this.keys.push(key);
-            this.memo[key] = [];
-        }
+        this.addKey(key);
         
-        Array.prototype.push.apply(this.memo[key], positions);
+        for (const position of positions) {
+            this.memo[key].push(position);
+        }
+        // Array.prototype.push.apply(this.memo[key], positions);
     }
 
     /**

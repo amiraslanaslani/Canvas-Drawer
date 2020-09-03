@@ -26,6 +26,9 @@
 <dt><a href="#getDataCopy">getDataCopy()</a> ⇒ <code>Object</code></dt>
 <dd><p>Get clone of all data saved in this historian</p>
 </dd>
+<dt><a href="#addKey">addKey(key)</a></dt>
+<dd><p>Add empty key.</p>
+</dd>
 <dt><a href="#submit">submit(positions, key)</a></dt>
 <dd><p>Submit passed vertices for passed key</p>
 </dd>
@@ -85,6 +88,17 @@ Get clone of all data saved in this historian
 
 **Kind**: global function  
 **Returns**: <code>Object</code> - clone of all data saved in this historian  
+<a name="addKey"></a>
+
+## addKey(key)
+Add empty key.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | key |
+
 <a name="submit"></a>
 
 ## submit(positions, key)

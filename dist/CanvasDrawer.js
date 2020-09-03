@@ -6,7 +6,7 @@
  * Released under the Apache license 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Date: 2020-09-03T08:03:38.042Z (Thu, 03 Sep 2020 08:03:38 GMT)
+ * Date: 2020-09-03T10:31:06.342Z (Thu, 03 Sep 2020 10:31:06 GMT)
  */
 
 "use strict";
@@ -148,7 +148,11 @@ function HistoryManager(historians){
     this.getKeys = function(){
         let result = [];
         for (const historian of this.getArrayOfHistorians()) {
-            Array.prototype.push.apply(result, historian.getKeys());
+            for (const key of historian.getKeys()) {
+                result.push(key);
+            }
+
+            // Array.prototype.push.apply(result, historian.getKeys());
         }
         return result;
     }
@@ -167,7 +171,11 @@ function HistoryManager(historians){
                 if(! (color in result))
                     result[color] = [];
 
-                Array.prototype.push.apply(result[color], memo[color]);
+                // Array.prototype.push.apply(result[color], memo[color]);
+
+                for (const position of memo[color]) {
+                    result[color].push(position);
+                }
             }
             
         }
@@ -220,18 +228,30 @@ function Historian(){
     this.key = "-1";
 
     /**
+     * Add empty key.
+     * 
+     * @param {string} key key
+     */
+    this.addKey = function(key){
+        if(! (key in this.memo)){
+            this.keys.push(key);
+            this.memo[key] = [];
+        }
+    }
+
+    /**
      * Submit passed vertices for passed key
      * 
      * @param {number[]} positions array of vertices
      * @param {string} key key
      */
     this.submit = function(positions, key){
-        if(! (key in this.memo)){
-            this.keys.push(key);
-            this.memo[key] = [];
-        }
+        this.addKey(key);
         
-        Array.prototype.push.apply(this.memo[key], positions);
+        for (const position of positions) {
+            this.memo[key].push(position);
+        }
+        // Array.prototype.push.apply(this.memo[key], positions);
     }
 
     /**

@@ -137,7 +137,11 @@ function HistoryManager(historians){
     this.getKeys = function(){
         let result = [];
         for (const historian of this.getArrayOfHistorians()) {
-            Array.prototype.push.apply(result, historian.getKeys());
+            for (const key of historian.getKeys()) {
+                result.push(key);
+            }
+
+            // Array.prototype.push.apply(result, historian.getKeys());
         }
         return result;
     }
@@ -156,7 +160,11 @@ function HistoryManager(historians){
                 if(! (color in result))
                     result[color] = [];
 
-                Array.prototype.push.apply(result[color], memo[color]);
+                // Array.prototype.push.apply(result[color], memo[color]);
+
+                for (const position of memo[color]) {
+                    result[color].push(position);
+                }
             }
             
         }
